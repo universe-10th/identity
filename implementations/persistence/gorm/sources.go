@@ -7,6 +7,9 @@ import (
 )
 
 
+/**
+ * Source implementation for GORM engine.
+ */
 type GORMSource struct {
 	db *gorm.DB
 }

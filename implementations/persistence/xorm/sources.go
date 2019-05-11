@@ -8,6 +8,9 @@ import (
 )
 
 
+/**
+ * Source implementation for XORM engine.
+ */
 type XORMSource struct {
 	db *xorm.Engine
 }
