@@ -1,3 +1,3 @@
-module github.com/luismasuelli/gormid
+module github.com/luismasuelli/go-identity
 
 go 1.12
