@@ -8,11 +8,11 @@ import (
 /**
  * BCrypt hashing facade.
  */
-type BCryptHashingEngine struct {
+type bcryptHashingEngine struct {
 	cost int
 }
 
-func (bcryptHashingEngine *BCryptHashingEngine) Hash(password string) (string, error) {
+func (bcryptHashingEngine *bcryptHashingEngine) Hash(password string) (string, error) {
 	result, err := bcrypt.GenerateFromPassword([]byte(password), bcryptHashingEngine.cost)
 	if err != nil {
 		return "", err
@@ -21,15 +21,15 @@ func (bcryptHashingEngine *BCryptHashingEngine) Hash(password string) (string, e
 	}
 }
 
-func (bcryptHashingEngine *BCryptHashingEngine) Validate(password string, hash string) error {
+func (bcryptHashingEngine *bcryptHashingEngine) Validate(password string, hash string) error {
 	return bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
 }
 
-func (bcryptHashingEngine *BCryptHashingEngine) Name() string {
+func (bcryptHashingEngine *bcryptHashingEngine) Name() string {
 	return "bcrypt"
 }
 
 
 func New(cost int) interfaces.PasswordHashingEngine {
-	return &BCryptHashingEngine{cost}
+	return &bcryptHashingEngine{cost}
 }
