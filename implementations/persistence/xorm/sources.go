@@ -11,7 +11,7 @@ import (
 /**
  * Source implementation for XORM engine.
  */
-type XORMSource struct {
+type xormSource struct {
 	db *xorm.Engine
 }
 
@@ -19,7 +19,7 @@ type XORMSource struct {
 var NotFound = errors.New("record not found")
 
 
-func (xormSource XORMSource) Lookup(resultHolder interfaces.Credential, identification string) error {
+func (xormSource xormSource) Lookup(resultHolder interfaces.Credential, identification string) error {
 	caseSensitive := resultHolder.IdentificationIsCaseSensitive()
 	query := ""
 	if caseSensitive {
@@ -38,5 +38,5 @@ func (xormSource XORMSource) Lookup(resultHolder interfaces.Credential, identifi
 
 
 func NewSource(db *xorm.Engine) interfaces.Source {
-	return &XORMSource{db}
+	return &xormSource{db}
 }

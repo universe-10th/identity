@@ -10,12 +10,12 @@ import (
 /**
  * Source implementation for GORM engine.
  */
-type GORMSource struct {
+type gormSource struct {
 	db *gorm.DB
 }
 
 
-func (gormSource GORMSource) Lookup(resultHolder interfaces.Credential, identification string) error {
+func (gormSource *gormSource) Lookup(resultHolder interfaces.Credential, identification string) error {
 	caseSensitive := resultHolder.IdentificationIsCaseSensitive()
 	query := ""
 	if caseSensitive {
@@ -28,5 +28,5 @@ func (gormSource GORMSource) Lookup(resultHolder interfaces.Credential, identifi
 
 
 func NewSource(db *gorm.DB) interfaces.Source {
-	return &GORMSource{db}
+	return &gormSource{db}
 }
