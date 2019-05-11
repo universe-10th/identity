@@ -1,6 +1,6 @@
 package types
 
-import "github.com/luismasuelli/gormid/interfaces"
+import "github.com/luismasuelli/go-identity/interfaces"
 
 type AllOf []interfaces.AuthorizationRequirement
 type AnyOf []interfaces.AuthorizationRequirement

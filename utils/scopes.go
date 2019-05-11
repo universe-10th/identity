@@ -2,7 +2,7 @@ package utils
 
 import (
 	"errors"
-	"github.com/luismasuelli/gormid/interfaces"
+	"github.com/luismasuelli/go-identity/interfaces"
 )
 
 var Unauthorized = errors.New("unauthorized to execute the action")
@@ -14,7 +14,7 @@ var Unauthorized = errors.New("unauthorized to execute the action")
 func Authorize(credential interfaces.Credential, requirement interfaces.AuthorizationRequirement) error {
 	// Ensure only a pointer to a struct enters here
 	if !prototypeIsAStructPtr(credential) {
-		return StructPointerPrototypeExpected
+		return StructPointerStubExpected
 	}
 
 	// Empty authorization is always true

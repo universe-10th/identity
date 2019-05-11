@@ -1,15 +1,13 @@
 package utils
 
 import (
-	"fmt"
 	"errors"
 	"reflect"
-	"github.com/jinzhu/gorm"
-	"github.com/luismasuelli/gormid/interfaces"
-	"github.com/luismasuelli/gormid/types"
+	"github.com/luismasuelli/go-identity/interfaces"
+	"github.com/luismasuelli/go-identity/types"
 )
 
-var StructPointerPrototypeExpected = errors.New("only pointer-kind prototypes are allowed")
+var StructPointerStubExpected = errors.New("only pointer-kind stubs are allowed")
 var CredentialDoesNotHavePassword = errors.New("fetched credential does not have password")
 
 func prototypeIsAStructPtr(prototype interface{}) bool {
@@ -33,48 +31,40 @@ func prototypeIsAStructPtr(prototype interface{}) bool {
  *   T being a struct type), a database error, a bad password, a password-less credential, or
  *   another custom login error (after or before the passwords check).
  */
-func Login(db *gorm.DB, prototype interfaces.Credential, identification string, password string) (interfaces.Credential, error) {
+func Login(source interfaces.Source, lookupResult interfaces.Credential, identification string, password string) error {
 	// Ensure only a pointer to a struct enters here
-	if !prototypeIsAStructPtr(prototype) {
-		return nil, StructPointerPrototypeExpected
+	if !prototypeIsAStructPtr(lookupResult) {
+		return StructPointerStubExpected
 	}
 
 	// Find the credential in database
-	caseSensitive := prototype.IdentificationIsCaseSensitive()
-	lookupResult := reflect.New(reflect.ValueOf(prototype).Elem().Type()).Interface().(interfaces.Credential)
-	query := ""
-	if caseSensitive {
-		query = fmt.Sprintf("%s = ?", prototype.IdentificationField())
-	} else {
-		query = fmt.Sprintf("UPPER(%s) = UPPER(?)", prototype.IdentificationField())
-	}
-	if err := db.Where(query, identification).First(lookupResult).Error; err != nil {
-		return nil, err
+	if err := source.Lookup(lookupResult, identification); err != nil {
+		return err
 	}
 
 	hash := lookupResult.HashedPassword()
 
 	// Check if it has password
 	if hash == "" {
-		return nil, CredentialDoesNotHavePassword
+		return CredentialDoesNotHavePassword
 	}
 
 	// Check on "before" stage
 	if err := lookupResult.CheckLogin(types.BeforePasswordCheck); err != nil {
-		return nil, err
+		return err
 	}
 
 	// Check the password
 	if err := lookupResult.HashingEngine().Validate(password, hash); err != nil {
-		return nil, err
+		return err
 	}
 
 	// Check on "after" stage
 	if err := lookupResult.CheckLogin(types.AfterPasswordCheck); err != nil {
-		return nil, err
+		return err
 	}
 
-	return lookupResult, nil
+	return nil
 }
 
 
@@ -85,7 +75,7 @@ func Login(db *gorm.DB, prototype interfaces.Credential, identification string, 
 func SetPassword(credential interfaces.Credential, password string) error {
 	// Ensure only a pointer to a struct enters here
 	if !prototypeIsAStructPtr(credential) {
-		return StructPointerPrototypeExpected
+		return StructPointerStubExpected
 	}
 
 	// Hash the password and store it
@@ -105,7 +95,7 @@ func SetPassword(credential interfaces.Credential, password string) error {
 func ClearPassword(credential interfaces.Credential) error {
 	// Ensure only a pointer to a struct enters here
 	if !prototypeIsAStructPtr(credential) {
-		return StructPointerPrototypeExpected
+		return StructPointerStubExpected
 	}
 
 	// Clear the password
