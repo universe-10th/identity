@@ -1,0 +1,8 @@
+Default implementations for Hashing engines:
+  - Bcrypt.
+Default implementations for Credential models:
+  - Username/Password.
+  - E-mail/Password.
+  - Scoped Wrapper (it can take ANY credential as source).
+Default implementation for Scope:
+  - Model-Backed scope implementation (against a Scoped Wrapper).
