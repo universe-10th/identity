@@ -1,7 +1,13 @@
 package bcrypt
 
-import "golang.org/x/crypto/bcrypt"
+import (
+	"golang.org/x/crypto/bcrypt"
+	"github.com/luismasuelli/go-identity/interfaces"
+)
 
+/**
+ * BCrypt hashing facade.
+ */
 type BCryptHashingEngine struct {
 	cost int
 }
@@ -21,4 +27,9 @@ func (bcryptHashingEngine *BCryptHashingEngine) Validate(password string, hash s
 
 func (bcryptHashingEngine *BCryptHashingEngine) Name() string {
 	return "bcrypt"
+}
+
+
+func New(cost int) interfaces.PasswordHashingEngine {
+	return &BCryptHashingEngine{cost}
 }
