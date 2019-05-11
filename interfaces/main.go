@@ -4,18 +4,6 @@ import "github.com/luismasuelli/go-identity/types"
 
 
 /**
- * Hashing engines are facades of regularly (already
- *   implemented) algorithms like bcrypt.
- */
-type PasswordHashingEngine interface {
-	// Creates a hash, ready to be stored.
-	Hash(password string) (string, error)
-	// Validates a password against a hash.
-	Validate(password string, hash string) error
-}
-
-
-/**
  * Credential interface will be implemented on particular
  *   models we're interested about to be credentials (one
  *   example: users).
