@@ -18,3 +18,7 @@ func (bcryptHashingEngine *BCryptHashingEngine) Hash(password string) (string, e
 func (bcryptHashingEngine *BCryptHashingEngine) Validate(password string, hash string) error {
 	return bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
 }
+
+func (bcryptHashingEngine *BCryptHashingEngine) Name() string {
+	return "bcrypt"
+}
