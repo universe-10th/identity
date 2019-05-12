@@ -6,6 +6,9 @@ import (
 	"time"
 )
 
+/**
+ * User bare implementation for XORM engine.
+ */
 type User struct {
 	Id uint `xorm:"pk"`
 	CreatedAt time.Time `xorm:"created"`

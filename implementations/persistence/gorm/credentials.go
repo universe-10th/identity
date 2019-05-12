@@ -6,6 +6,9 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
+/**
+ * User bare implementation for GORM engine.
+ */
 type User struct {
 	gorm.Model
 	Username string `gorm:"size:30;not null;unique"`
