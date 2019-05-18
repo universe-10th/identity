@@ -22,6 +22,11 @@ func Authorize(credential stub.Credential, requirement stub.AuthorizationRequire
 		return nil
 	}
 
+	// We allow superusers to do ANYTHING.
+	if su, ok := credential.(stub.WithSuperUserFlag); ok && su.IsSuperUser() {
+		return nil
+	}
+
 	if requirement.SatisfiedBy(credential) {
 		return nil
 	} else {

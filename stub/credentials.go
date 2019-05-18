@@ -34,3 +34,12 @@ type Credential interface {
 	//   such check will also run in a different moment.
 	CheckLogin(stage types.LoginStage) error
 }
+
+
+/**
+ * Super user interface provides a way to tell whether the
+ *   underlying object should be understood as a superuser.
+ */
+type WithSuperUserFlag interface {
+	IsSuperUser() bool
+}
