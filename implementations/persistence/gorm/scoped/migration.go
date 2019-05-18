@@ -2,7 +2,8 @@ package scoped
 
 import "github.com/jinzhu/gorm"
 
-func MigrateCredentials(db *gorm.DB) {
+func MigrateAll(db *gorm.DB) {
+	MigrateScopes(db)
 	db.AutoMigrate(&User{})
 }
 
