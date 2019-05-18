@@ -5,9 +5,14 @@ import "github.com/luismasuelli/go-identity/implementations/persistence/gorm/bar
 
 type User struct {
 	bare.User
-	IsSuperuser bool                         `gorm:"not null"`
+	SuperUser   bool                         `gorm:"not null"`
 	Scopes      []*ModelBackedScope          `gorm:"many2many:user_scopes"`
 	scopesMap   map[string]*ModelBackedScope `gorm:"-"`
+}
+
+
+func (user *User) IsSuperUser() bool {
+	return user.SuperUser
 }
 
 
