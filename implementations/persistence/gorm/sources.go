@@ -23,7 +23,7 @@ func (gormSource *gormSource) Lookup(resultHolder stub.Credential, identificatio
 	} else {
 		query = fmt.Sprintf("UPPER(%s) = UPPER(?)", resultHolder.IdentificationField())
 	}
-	return gormSource.db.Where(query, identification).Find(resultHolder).Error
+	return gormSource.db.Where(query, identification).First(resultHolder).Error
 }
 
 
