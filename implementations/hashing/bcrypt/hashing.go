@@ -35,4 +35,4 @@ func New(cost int) stub.PasswordHashingEngine {
 }
 
 
-var Default = New(20)
+var Default = New(10)
