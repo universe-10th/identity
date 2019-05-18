@@ -2,7 +2,7 @@ package bcrypt
 
 import (
 	"golang.org/x/crypto/bcrypt"
-	"github.com/luismasuelli/go-identity/interfaces"
+	"github.com/luismasuelli/go-identity/stub"
 )
 
 /**
@@ -30,6 +30,6 @@ func (bcryptHashingEngine *bcryptHashingEngine) Name() string {
 }
 
 
-func New(cost int) interfaces.PasswordHashingEngine {
+func New(cost int) stub.PasswordHashingEngine {
 	return &bcryptHashingEngine{cost}
 }

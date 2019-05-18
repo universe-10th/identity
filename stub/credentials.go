@@ -1,4 +1,4 @@
-package interfaces
+package stub
 
 import "github.com/luismasuelli/go-identity/types"
 

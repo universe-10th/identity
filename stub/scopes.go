@@ -1,4 +1,4 @@
-package interfaces
+package stub
 
 
 /**
@@ -26,4 +26,28 @@ type Scope interface {
 	Name() string
 	// The scope description (optional).
 	Description() string
+}
+
+
+type AllOf []AuthorizationRequirement
+type AnyOf []AuthorizationRequirement
+
+
+func (allOf AllOf) SatisfiedBy(credential Credential) bool {
+	for _, value := range allOf {
+		if !value.SatisfiedBy(credential) {
+			return false
+		}
+	}
+	return true
+}
+
+
+func (anyOf AnyOf) SatisfiedBy(credential Credential) bool {
+	for _, value := range anyOf {
+		if value.SatisfiedBy(credential) {
+			return true
+		}
+	}
+	return false
 }

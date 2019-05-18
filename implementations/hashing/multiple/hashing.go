@@ -12,7 +12,7 @@ import (
  */
 type MultiplePasswordHashingEngine struct {
 	defaultEngine string
-	registeredEngines map[string]interfaces.PasswordHashingEngine
+	registeredEngines map[string]stub.PasswordHashingEngine
 }
 
 var InvalidHash = errors.New("invalid hash string")
@@ -57,7 +57,7 @@ func (multiplePasswordHashingEngine *MultiplePasswordHashingEngine) Name() strin
 }
 
 
-func NewWithDefault(defaultEngine interfaces.PasswordHashingEngine, engines ...interfaces.PasswordHashingEngine) interfaces.PasswordHashingEngine {
+func NewWithDefault(defaultEngine stub.PasswordHashingEngine, engines ...stub.PasswordHashingEngine) stub.PasswordHashingEngine {
 	if len(engines) == 0 {
 		panic("no engines were specified")
 	}
@@ -91,6 +91,6 @@ func NewWithDefault(defaultEngine interfaces.PasswordHashingEngine, engines ...i
 }
 
 
-func New(engines ...interfaces.PasswordHashingEngine) interfaces.PasswordHashingEngine {
+func New(engines ...stub.PasswordHashingEngine) stub.PasswordHashingEngine {
 	return NewWithDefault(nil, engines...)
 }

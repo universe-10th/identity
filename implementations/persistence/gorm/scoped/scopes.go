@@ -1,6 +1,8 @@
 package scoped
 
-import "github.com/luismasuelli/go-identity/interfaces"
+import (
+	"github.com/luismasuelli/go-identity/stub"
+)
 
 /**
  * Scope implementation for GORM engine.
@@ -33,7 +35,7 @@ func (scope *ModelBackedScope) Description() string {
 	return scope.HelpText
 }
 
-func (scope *ModelBackedScope) SatisfiedBy(credential interfaces.Credential) bool {
+func (scope *ModelBackedScope) SatisfiedBy(credential stub.Credential) bool {
 	if holder, isHolder := credential.(ModelBackedScopeHolder); isHolder {
 		_, ok := holder.GetScopes(false)[scope.Key()]
 		return ok

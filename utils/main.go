@@ -3,8 +3,8 @@ package utils
 import (
 	"errors"
 	"reflect"
-	"github.com/luismasuelli/go-identity/interfaces"
 	"github.com/luismasuelli/go-identity/types"
+	"github.com/luismasuelli/go-identity/stub"
 )
 
 var StructPointerStubExpected = errors.New("only pointer-kind stubs are allowed")
@@ -31,7 +31,7 @@ func prototypeIsAStructPtr(prototype interface{}) bool {
  *   T being a struct type), a database error, a bad password, a password-less credential, or
  *   another custom login error (after or before the passwords check).
  */
-func Login(source interfaces.Source, lookupResult interfaces.Credential, identification string, password string) error {
+func Login(source stub.Source, lookupResult stub.Credential, identification string, password string) error {
 	// Ensure only a pointer to a struct enters here
 	if !prototypeIsAStructPtr(lookupResult) {
 		return StructPointerStubExpected
@@ -72,7 +72,7 @@ func Login(source interfaces.Source, lookupResult interfaces.Credential, identif
  * Sets a new password to the given credential. The given credential must be
  *   a (*T) value (with T being a struct type).
  */
-func SetPassword(credential interfaces.Credential, password string) error {
+func SetPassword(credential stub.Credential, password string) error {
 	// Ensure only a pointer to a struct enters here
 	if !prototypeIsAStructPtr(credential) {
 		return StructPointerStubExpected
@@ -92,7 +92,7 @@ func SetPassword(credential interfaces.Credential, password string) error {
  * Clears the password from the given credential. The given credential must be
  *   a (*T) value (with T being a struct type).
  */
-func ClearPassword(credential interfaces.Credential) error {
+func ClearPassword(credential stub.Credential) error {
 	// Ensure only a pointer to a struct enters here
 	if !prototypeIsAStructPtr(credential) {
 		return StructPointerStubExpected

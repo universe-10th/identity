@@ -2,7 +2,7 @@ package bare
 
 import (
 	"github.com/jinzhu/gorm"
-	"github.com/luismasuelli/go-identity/interfaces"
+	"github.com/luismasuelli/go-identity/stub"
 	"github.com/luismasuelli/go-identity/types"
 	"errors"
 )
@@ -40,7 +40,7 @@ func (user *User) HashedPassword() string {
 	return user.Password
 }
 
-func (user *User) HashingEngine() interfaces.PasswordHashingEngine {
+func (user *User) HashingEngine() stub.PasswordHashingEngine {
 	panic("not implemented")
 }
 

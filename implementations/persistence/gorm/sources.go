@@ -2,7 +2,7 @@ package gorm
 
 import (
 	"github.com/jinzhu/gorm"
-	"github.com/luismasuelli/go-identity/interfaces"
+	"github.com/luismasuelli/go-identity/stub"
 	"fmt"
 )
 
@@ -15,7 +15,7 @@ type gormSource struct {
 }
 
 
-func (gormSource *gormSource) Lookup(resultHolder interfaces.Credential, identification string) error {
+func (gormSource *gormSource) Lookup(resultHolder stub.Credential, identification string) error {
 	caseSensitive := resultHolder.IdentificationIsCaseSensitive()
 	query := ""
 	if caseSensitive {
@@ -27,6 +27,6 @@ func (gormSource *gormSource) Lookup(resultHolder interfaces.Credential, identif
 }
 
 
-func NewSource(db *gorm.DB) interfaces.Source {
+func NewSource(db *gorm.DB) stub.Source {
 	return &gormSource{db}
 }
