@@ -18,7 +18,7 @@ type ModelBackedScope struct {
  *   ModelBackedScope for it.
  */
 type ModelBackedScopeHolder interface {
-	Scopes(forceRefresh bool) map[string]ModelBackedScope
+	GetScopes(forceRefresh bool) map[string]*ModelBackedScope
 }
 
 func (scope *ModelBackedScope) Key() string {
@@ -35,7 +35,7 @@ func (scope *ModelBackedScope) Description() string {
 
 func (scope *ModelBackedScope) SatisfiedBy(credential interfaces.Credential) bool {
 	if holder, isHolder := credential.(ModelBackedScopeHolder); isHolder {
-		_, ok := holder.Scopes(false)[scope.Key()]
+		_, ok := holder.GetScopes(false)[scope.Key()]
 		return ok
 	} else {
 		return false
