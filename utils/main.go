@@ -3,7 +3,7 @@ package utils
 import (
 	"errors"
 	"reflect"
-	"github.com/luismasuelli/go-identity/types"
+	"github.com/luismasuelli/go-identity/support/types"
 	"github.com/luismasuelli/go-identity/stub"
 )
 

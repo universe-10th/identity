@@ -1,6 +1,6 @@
 package stub
 
-import "github.com/luismasuelli/go-identity/types"
+import "github.com/luismasuelli/go-identity/support/types"
 
 
 /**
