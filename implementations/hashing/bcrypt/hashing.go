@@ -33,3 +33,6 @@ func (bcryptHashingEngine *bcryptHashingEngine) Name() string {
 func New(cost int) stub.PasswordHashingEngine {
 	return &bcryptHashingEngine{cost}
 }
+
+
+var Default = New(20)
