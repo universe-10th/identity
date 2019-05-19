@@ -92,7 +92,7 @@ It consists on three parts:
   - `gorm_impl.Lookup(*gorm.DB)`: A gorm lookup mechanism that allows us to
     search for those credentials.
 
-When you're ready, you can install them: `db.AutoMigrate(&ModelBackedScope{}, &MyUserSubclass)`.
+When you're ready, you can install them: `db.AutoMigrate(&ModelBackedScope{}, &MyUserSubclass{})`.
 If you want, you can peek the source code of those two classes and implement types by yourself.
 
 And that's it! Migrate them, run them, and have your system around it.
