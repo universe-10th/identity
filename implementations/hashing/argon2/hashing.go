@@ -1,10 +1,10 @@
 package argon2
 
 import (
-	"github.com/luismasuelli/go-identity/stub"
+	"github.com/universe-10th/identity/stub"
 	"golang.org/x/crypto/argon2"
 	"runtime"
-	"github.com/luismasuelli/go-identity/support/utils"
+	"github.com/universe-10th/identity/support/utils"
 	"encoding/base64"
 	"strings"
 	"errors"

@@ -2,7 +2,7 @@ package bcrypt
 
 import (
 	"golang.org/x/crypto/bcrypt"
-	"github.com/luismasuelli/go-identity/stub"
+	"github.com/universe-10th/identity/stub"
 )
 
 /**

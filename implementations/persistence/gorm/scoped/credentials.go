@@ -1,6 +1,6 @@
 package scoped
 
-import "github.com/luismasuelli/go-identity/implementations/persistence/gorm/bare"
+import "github.com/universe-10th/identity/implementations/persistence/gorm/bare"
 
 
 type User struct {

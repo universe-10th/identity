@@ -2,7 +2,7 @@ package gorm
 
 import (
 	"github.com/jinzhu/gorm"
-	"github.com/luismasuelli/go-identity/stub"
+	"github.com/universe-10th/identity/stub"
 	"fmt"
 )
 

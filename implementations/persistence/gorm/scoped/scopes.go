@@ -1,7 +1,7 @@
 package scoped
 
 import (
-	"github.com/luismasuelli/go-identity/stub"
+	"github.com/universe-10th/identity/stub"
 )
 
 /**

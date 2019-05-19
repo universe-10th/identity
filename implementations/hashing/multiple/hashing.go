@@ -3,7 +3,7 @@ package multiple
 import (
 	"strings"
 	"errors"
-	"github.com/luismasuelli/go-identity/stub"
+	"github.com/universe-10th/identity/stub"
 )
 
 /**

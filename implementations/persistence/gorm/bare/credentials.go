@@ -2,8 +2,8 @@ package bare
 
 import (
 	"github.com/jinzhu/gorm"
-	"github.com/luismasuelli/go-identity/stub"
-	"github.com/luismasuelli/go-identity/support/types"
+	"github.com/universe-10th/identity/stub"
+	"github.com/universe-10th/identity/support/types"
 	"errors"
 )
 

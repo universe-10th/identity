@@ -3,8 +3,8 @@ package identity
 import (
 	"errors"
 	"reflect"
-	"github.com/luismasuelli/go-identity/support/types"
-	"github.com/luismasuelli/go-identity/stub"
+	"github.com/universe-10th/identity/support/types"
+	"github.com/universe-10th/identity/stub"
 )
 
 var StructPointerStubExpected = errors.New("only pointer-kind stubs are allowed")

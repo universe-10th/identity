@@ -2,7 +2,7 @@ package identity
 
 import (
 	"errors"
-	"github.com/luismasuelli/go-identity/stub"
+	"github.com/universe-10th/identity/stub"
 )
 
 var Unauthorized = errors.New("unauthorized to execute the action")
