@@ -1,4 +1,4 @@
-package go_identity
+package identity
 
 import (
 	"errors"
