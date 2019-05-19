@@ -8,13 +8,16 @@ import "github.com/universe-10th/identity/support/types"
 // models we're interested about to be credentials (one
 // example: users).
 type Credential interface {
+	// Tells which field has the primary key.
+	// It will allow us to use that field to perform
+	// a database search.
+	PrimaryKeyField() string
 	// Tells which field has the identification.
-	// This, instead of retrieving the identification:
 	// It will allow us to use that field to perform
 	// a database search.
 	IdentificationField() string
 	// Tells whether the identification lookup is case
-	// sensitive or not.
+	// sensitive or not (only useful to string fields).
 	IdentificationIsCaseSensitive() bool
 	// A mean to set the password. It will most likely
 	// store the (hashed) password inside a particular

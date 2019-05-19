@@ -13,7 +13,7 @@ type gormSource struct {
 
 
 // Returns a GORM-compatible lookup: it will perform a lookup against
-// the underlying model's table, using appropriate model's field and
+// the underlying model's table, using model's identification field and
 // case sensitivity inside a GORM connection.
 func (gormSource *gormSource) ByIdentification(resultHolder stub.Credential, identification interface{}) error {
 	caseSensitive := resultHolder.IdentificationIsCaseSensitive()
@@ -24,6 +24,14 @@ func (gormSource *gormSource) ByIdentification(resultHolder stub.Credential, ide
 		query = fmt.Sprintf("UPPER(%s) = UPPER(?)", resultHolder.IdentificationField())
 	}
 	return gormSource.db.Where(query, identification).First(resultHolder).Error
+}
+
+
+// Returns a GORM-compatible lookup: it will perform a lookup against
+// the underlying model's table, using model's primary key field inside
+// a GORM connection.
+func (gormSource *gormSource) ByPrimaryKey(resultHolder stub.Credential, pk interface{}) error {
+	return gormSource.db.Where(resultHolder.PrimaryKeyField() + " = ?", pk).First(resultHolder).Error
 }
 
 
