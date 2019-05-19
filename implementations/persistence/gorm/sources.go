@@ -7,14 +7,14 @@ import (
 )
 
 
-/**
- * Source implementation for GORM engine.
- */
 type gormSource struct {
 	db *gorm.DB
 }
 
 
+// Returns a GORM-compatible lookup: it will perform a lookup against
+// the underlying model's table, using appropriate model's field and
+// case sensitivity inside a GORM connection.
 func (gormSource *gormSource) Lookup(resultHolder stub.Credential, identification string) error {
 	caseSensitive := resultHolder.IdentificationIsCaseSensitive()
 	query := ""
@@ -27,6 +27,8 @@ func (gormSource *gormSource) Lookup(resultHolder stub.Credential, identificatio
 }
 
 
+// Instantiates a GORM-compatible lookup source for a particular db
+// connection given as argument.
 func NewSource(db *gorm.DB) stub.Source {
 	return &gormSource{db}
 }
