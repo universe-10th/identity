@@ -96,3 +96,26 @@ func ClearPassword(credential stub.Credential) error {
 	credential.ClearPassword()
 	return nil
 }
+
+
+// Marshal a credential: retrieves its primary key.
+func Marshal(credential stub.Credential) (interface{}, error) {
+	// Ensure only a pointer to a struct enters here
+	if !prototypeIsAStructPtr(credential) {
+		return nil, StructPointerStubExpected
+	} else {
+		return credential.PrimaryKey(), nil
+	}
+}
+
+
+// Unmarshal a credential from a lookup and its primary key.
+func Unmarshal(source stub.Source, lookupResult stub.Credential, pk interface{}) error {
+	// Ensure only a pointer to a struct enters here
+	if !prototypeIsAStructPtr(lookupResult) {
+		return StructPointerStubExpected
+	}
+
+	// Find the credential in database
+	return source.ByIdentification(lookupResult, pk)
+}
