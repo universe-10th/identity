@@ -29,7 +29,7 @@ func prototypeIsAStructPtr(prototype interface{}) bool {
 // perform a login. It may fail for several reasons: the prototype is not a (*T) type (with
 // T being a struct type), a database error, a bad password, a password-less credential, or
 // another custom login error (after or before the passwords check).
-func Login(source stub.Source, lookupResult stub.Credential, identification string, password string) error {
+func Login(source stub.Source, lookupResult stub.Credential, identification interface{}, password string) error {
 	// Ensure only a pointer to a struct enters here
 	if !prototypeIsAStructPtr(lookupResult) {
 		return StructPointerStubExpected

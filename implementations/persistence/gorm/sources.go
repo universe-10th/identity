@@ -15,7 +15,7 @@ type gormSource struct {
 // Returns a GORM-compatible lookup: it will perform a lookup against
 // the underlying model's table, using appropriate model's field and
 // case sensitivity inside a GORM connection.
-func (gormSource *gormSource) ByIdentification(resultHolder stub.Credential, identification string) error {
+func (gormSource *gormSource) ByIdentification(resultHolder stub.Credential, identification interface{}) error {
 	caseSensitive := resultHolder.IdentificationIsCaseSensitive()
 	query := ""
 	if caseSensitive {
