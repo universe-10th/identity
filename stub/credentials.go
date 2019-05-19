@@ -8,9 +8,13 @@ import "github.com/universe-10th/identity/support/types"
 // models we're interested about to be credentials (one
 // example: users).
 type Credential interface {
+	// Retrieves the credential's primary key, used
+	// to serialize / store in sessions or JWT.
+	PrimaryKey() interface{}
 	// Tells which field has the primary key.
 	// It will allow us to use that field to perform
-	// a database search.
+	// a database search. It must be consistent with
+	// the implementation of PrimaryKey() method.
 	PrimaryKeyField() string
 	// Tells which field has the identification.
 	// It will allow us to use that field to perform

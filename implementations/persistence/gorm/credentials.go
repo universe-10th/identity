@@ -33,6 +33,12 @@ type User struct {
 }
 
 
+// Gets its primary key from the ID field.
+func(user *User) PrimaryKey() interface{} {
+	return user.ID
+}
+
+
 // Its serialized primary key will be its ID field.
 func (*User) PrimaryKeyField() string {
 	return "id"
