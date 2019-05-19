@@ -1,4 +1,4 @@
-package scoped
+package gorm
 
 import (
 	"github.com/universe-10th/identity/stub"
