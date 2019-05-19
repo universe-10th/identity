@@ -25,12 +25,10 @@ func prototypeIsAStructPtr(prototype interface{}) bool {
 }
 
 
-/**
- * Given a database query, a model prototype, an identification and a password, it tries to
- *   perform a login. It may fail for several reasons: the prototype is not a (*T) type (with
- *   T being a struct type), a database error, a bad password, a password-less credential, or
- *   another custom login error (after or before the passwords check).
- */
+// Given a database query, a model prototype, an identification and a password, it tries to
+// perform a login. It may fail for several reasons: the prototype is not a (*T) type (with
+// T being a struct type), a database error, a bad password, a password-less credential, or
+// another custom login error (after or before the passwords check).
 func Login(source stub.Source, lookupResult stub.Credential, identification string, password string) error {
 	// Ensure only a pointer to a struct enters here
 	if !prototypeIsAStructPtr(lookupResult) {
@@ -68,10 +66,8 @@ func Login(source stub.Source, lookupResult stub.Credential, identification stri
 }
 
 
-/**
- * Sets a new password to the given credential. The given credential must be
- *   a (*T) value (with T being a struct type).
- */
+// Sets a new password to the given credential. The given credential must be
+// a (*T) value (with T being a struct type).
 func SetPassword(credential stub.Credential, password string) error {
 	// Ensure only a pointer to a struct enters here
 	if !prototypeIsAStructPtr(credential) {
@@ -88,10 +84,8 @@ func SetPassword(credential stub.Credential, password string) error {
 }
 
 
-/**
- * Clears the password from the given credential. The given credential must be
- *   a (*T) value (with T being a struct type).
- */
+// Clears the password from the given credential. The given credential must be
+// a (*T) value (with T being a struct type).
 func ClearPassword(credential stub.Credential) error {
 	// Ensure only a pointer to a struct enters here
 	if !prototypeIsAStructPtr(credential) {

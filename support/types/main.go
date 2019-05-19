@@ -1,9 +1,7 @@
 package types
 
 
-/**
- * Login check stages (to add custom checks).
- */
+// Login check stages (to add custom checks).
 type LoginStage int
 const (
 	BeforePasswordCheck = LoginStage(0)

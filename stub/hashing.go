@@ -1,10 +1,8 @@
 package stub
 
 
-/**
- * Hashing engines are facades of regularly (already
- *   implemented) algorithms like bcrypt.
- */
+// Hashing engines are facades of regularly (already
+// implemented) algorithms like bcrypt.
 type PasswordHashingEngine interface {
 	// Name of the engine (useful for indexing).
 	Name() string

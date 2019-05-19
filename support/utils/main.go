@@ -16,6 +16,7 @@ const (
 var src = rand.NewSource(time.Now().UnixNano())
 
 
+// Generates a random salt of n characters.
 func Salt(n int) string {
 	b := make([]byte, n)
 	// This loop goes like this:
