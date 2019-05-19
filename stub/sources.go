@@ -6,5 +6,5 @@ package stub
 // result and as specifier of the model and case-sensitivity
 // of the search.
 type Source interface {
-	Lookup(resultHolder Credential, identification string) error
+	ByIdentification(resultHolder Credential, identification string) error
 }

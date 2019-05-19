@@ -36,7 +36,7 @@ func Login(source stub.Source, lookupResult stub.Credential, identification stri
 	}
 
 	// Find the credential in database
-	if err := source.Lookup(lookupResult, identification); err != nil {
+	if err := source.ByIdentification(lookupResult, identification); err != nil {
 		return err
 	}
 
