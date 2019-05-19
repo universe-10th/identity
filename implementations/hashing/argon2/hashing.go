@@ -1,13 +1,13 @@
 package argon2
 
 import (
-	"github.com/universe-10th/identity/stub"
-	"golang.org/x/crypto/argon2"
-	"runtime"
+	"errors"
 	"github.com/universe-10th/identity/support/utils"
+	"golang.org/x/crypto/argon2"
 	"encoding/base64"
 	"strings"
-	"errors"
+	"github.com/universe-10th/identity/stub"
+	"runtime"
 )
 
 
@@ -15,13 +15,12 @@ var InvalidHash = errors.New("invalid hash string")
 var PasswordMismatch = errors.New("password mismatch")
 
 
-/**
- * Argon2 hashing facade.
- */
+// Argon2 hashing facade.
 type argon2HashingEngine struct {
 	time, memory, keyLen uint32
 	threads, saltLength uint8
 }
+
 
 func (argon2HashingEngine *argon2HashingEngine) Hash(password string) (string, error) {
 	salt := utils.Salt(int(argon2HashingEngine.saltLength))
@@ -34,6 +33,7 @@ func (argon2HashingEngine *argon2HashingEngine) Hash(password string) (string, e
     )
 	return salt + "$" + base64.StdEncoding.EncodeToString(result), nil
 }
+
 
 func (argon2HashingEngine *argon2HashingEngine) Validate(password string, hash string) error {
 	parts := strings.SplitN(hash, "$", 2)
@@ -55,6 +55,7 @@ func (argon2HashingEngine *argon2HashingEngine) Validate(password string, hash s
 		return nil
 	}
 }
+
 
 func (argon2HashingEngine *argon2HashingEngine) Name() string {
 	return "argon2"
