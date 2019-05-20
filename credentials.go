@@ -119,3 +119,17 @@ func Unmarshal(source stub.Source, lookupResult stub.Credential, pk interface{})
 	// Find the credential in database
 	return source.ByIdentification(lookupResult, pk)
 }
+
+
+// Makes a cloning factory out of a given credential implementation.
+func Factory(prototype stub.Credential) (func() stub.Credential, error) {
+	// Ensure only a pointer to a struct enters here
+	if !prototypeIsAStructPtr(prototype) {
+		return nil, StructPointerStubExpected
+	}
+
+	structType := reflect.TypeOf(prototype).Elem()
+	return func() stub.Credential {
+		return reflect.New(structType).Interface().(stub.Credential)
+	}, nil
+}
