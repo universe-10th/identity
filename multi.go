@@ -3,16 +3,16 @@ package identity
 import "github.com/universe-10th/identity/stub"
 
 
-// A CredentialsMultiManager will work with many credentials managers together.
+// A MultiRealm will work with many credentials managers together.
 // You will give a prefix to different backends' marshaled keys to avoid collisions
 // you'd have due to lookup eventual priority.
-type CredentialsMultiManager map[string]*CredentialsManager
+type MultiRealm map[string]*Realm
 
 
-// Unmarshal a credential: it performs the appropriate lookup given its key and realm.
+// Unmarshal a credential: it performs the appropriate lookup given a key and realm key.
 // Used when de-serializing its ID in a live session.
-func (credentialsMultiManager CredentialsMultiManager) Unmarshal(realm string, pk interface{}) (stub.Credential, error) {
-	if manager, ok := credentialsMultiManager[realm]; ok {
+func (multiRealm MultiRealm) Unmarshal(realm string, pk interface{}) (stub.Credential, error) {
+	if manager, ok := multiRealm[realm]; ok {
 		return manager.Unmarshal(pk)
 	} else {
 		return nil, InvalidRealm
@@ -20,11 +20,11 @@ func (credentialsMultiManager CredentialsMultiManager) Unmarshal(realm string, p
 }
 
 
-// Lookup a credential: it performs the appropriate lookup given its key and realm.
+// Lookup a credential: it performs the appropriate lookup given an identification and realm.
 // Used when logging in (in a specific realm).
-func (credentialsMultiManager CredentialsMultiManager) Lookup(realm string, identification interface{}) (stub.Credential, error) {
+func (multiRealm MultiRealm) Lookup(realm string, identification interface{}) (stub.Credential, error) {
 	// A single-realm check
-	if manager, ok := credentialsMultiManager[realm]; ok {
+	if manager, ok := multiRealm[realm]; ok {
 		return manager.Lookup(identification)
 	} else {
 		return nil, InvalidRealm
@@ -34,8 +34,8 @@ func (credentialsMultiManager CredentialsMultiManager) Lookup(realm string, iden
 
 // Lookup a credential in every realm. The first match will be considered a success, and also
 // its realm key will be returned.
-func (CredentialsMultiManager CredentialsMultiManager) MultiLookup(identification interface{}) (string, stub.Credential, error) {
-	for realm, manager := range CredentialsMultiManager {
+func (multiRealm MultiRealm) MultiLookup(identification interface{}) (string, stub.Credential, error) {
+	for realm, manager := range multiRealm {
 		if credential, err := manager.Lookup(identification); err == nil && credential != nil {
 			return realm, credential, err
 		}

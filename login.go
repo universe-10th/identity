@@ -5,19 +5,18 @@ import (
 	"github.com/universe-10th/identity/support/types"
 )
 
-// Given a realm, a credentials multi-manager, an identification and a password, it tries to
-// perform a login. It may fail for several reasons: a database error, an unmatched lookup, a
-// bad password, a password-less credential, or another custom login error (after or before the
-// passwords check).
-func Login(realm string, managers CredentialsMultiManager, identification interface{}, password string) (string, stub.Credential, error) {
+// Given a realm, a muti-realm, an identification and a password, it tries to perform a login.
+// It may fail for several reasons: a database error, an unmatched lookup, a bad password, a
+// password-less credential, or another custom login error (after or before the passwords check).
+func Login(realm string, multiRealm MultiRealm, identification interface{}, password string) (string, stub.Credential, error) {
 	var credential stub.Credential
 	var err error
 
 	// Perform the lookup
 	if realm == "" {
-		realm, credential, err = managers.MultiLookup(identification)
+		realm, credential, err = multiRealm.MultiLookup(identification)
 	} else {
-		credential, err = managers.Lookup(realm, identification)
+		credential, err = multiRealm.Lookup(realm, identification)
 	}
 	if err != nil {
 		return "", nil, err
@@ -44,6 +43,6 @@ func Login(realm string, managers CredentialsMultiManager, identification interf
 		return "", nil, err
 	}
 
-	// Succeed: return realm, credential, and no error
+	// Succeed: return realm key, credential, and no error
 	return realm, credential, nil
 }
