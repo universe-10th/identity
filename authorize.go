@@ -5,7 +5,9 @@ import (
 	"github.com/universe-10th/identity/stub"
 )
 
+
 var Unauthorized = errors.New("unauthorized to execute the action")
+
 
 // Checks whether the credential is authorized. The given credential must be
 // a (*T) value (with T being a struct type).
