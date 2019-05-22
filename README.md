@@ -32,13 +32,16 @@ Assuming you have those interfaces correctly implemented, you can invoke:
     Tries to log a credential in. It may fail due to password mismatch, empty password,
     or another log in restriction failure. If the log in operation is successful, the
     `lookupResult` parameter will hold the returned object.
-  - `SetPassword(stub.Credential, password string)`: Sets a new password on the object.
+  - `SetPassword(credential stub.Credential, password string)`: Sets a new password on the object.
     It does by hashing the password (according to the credential's hashing engine) and
     stores it by the same mean the Credential provides to store the password hash.
-  - `ClearPassword(stub.Credential)`: Actually tells the credential to clear its password.
+  - `ClearPassword(credential stub.Credential)`: Actually tells the credential to clear its password.
   - `Authorize(credential stub.Credential, requirement stub.AuthorizationRequirement)`:
     Checks whether a specific credential (this usually apples to logged ones) is authorized
     by that requirement (which could be a single or complex one).
+  - `Marshal(credential stub.Credential)`: Takes a credential and gets its... key.
+  - `Unmarshal(source stub.Source, lookupResult stub.Credential, pk interface{})`: Takes a key and
+    fills the `lookupResult` parameter.
 
 Configuring hashers
 -------------------
