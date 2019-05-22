@@ -3,7 +3,6 @@ package stub
 import "github.com/universe-10th/identity/support/types"
 
 
-
 // Credential interface will be implemented on particular
 // models we're interested about to be credentials (one
 // example: users).
