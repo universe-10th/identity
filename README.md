@@ -28,10 +28,10 @@ And optional interfaces like:
 
 Assuming you have those interfaces correctly implemented, you can invoke:
 
-  - `Login(stub.Source, result stub.Credential, identification string, password string)`:
+  - `Login(realm string, managers CredentialsMultiManager, identification interface{}, password string)`:
     Tries to log a credential in. It may fail due to password mismatch, empty password,
-    or another log in restriction failure. If the log in operation is successful, the
-    `lookupResult` parameter will hold the returned object.
+    or another log in restriction failure. If the log in operation is successful, it returns
+    the logged in credential's realm, and the logged in credential.
   - `SetPassword(credential stub.Credential, password string)`: Sets a new password on the object.
     It does by hashing the password (according to the credential's hashing engine) and
     stores it by the same mean the Credential provides to store the password hash.
@@ -39,9 +39,10 @@ Assuming you have those interfaces correctly implemented, you can invoke:
   - `Authorize(credential stub.Credential, requirement stub.AuthorizationRequirement)`:
     Checks whether a specific credential (this usually apples to logged ones) is authorized
     by that requirement (which could be a single or complex one).
-  - `Marshal(credential stub.Credential)`: Takes a credential and gets its... key.
-  - `Unmarshal(source stub.Source, lookupResult stub.Credential, pk interface{})`: Takes a key and
-    fills the `lookupResult` parameter.
+
+For login to work, a `CredentialsMultiManager` must be created. It is just a kind of map with string keys,
+and values of type `CredentialsManager`. You'll be using it indirectly through the `Login` function, and
+middleware implementations/plugins will make use of it.
 
 Configuring hashers
 -------------------
