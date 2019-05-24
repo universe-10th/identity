@@ -54,10 +54,10 @@ func (realm *Realm) Unmarshal(pk interface{}) (stub.Credential, error) {
 
 // Lookup a credential: it performs the appropriate lookup given its identification.
 // Used when logging in.
-func (realm *Realm) Lookup(pk interface{}) (stub.Credential, error) {
+func (realm *Realm) Lookup(identification interface{}) (stub.Credential, error) {
 	// Find the credential in database, using source and factory.
 	holder := realm.factory()
-	if err := realm.source.ByIdentification(holder, pk); err != nil {
+	if err := realm.source.ByIdentification(holder, identification); err != nil {
 		return nil, err
 	} else {
 		return holder, nil

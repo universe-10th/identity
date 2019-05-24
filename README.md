@@ -26,23 +26,38 @@ And optional interfaces like:
   - `stub.WithSuperUserFlag`: Credentials also implementing interfaces can be
     considered as super-users if their method returns true.
 
-Assuming you have those interfaces correctly implemented, you can invoke:
+Assuming you have those interfaces correctly implemented, you can create what I called a `realm`
+(which is barely more than a relationship between a `Credential` type and a `Source` engine).
 
-  - `Login(realm string, managers CredentialsMultiManager, identification interface{}, password string)`:
-    Tries to log a credential in. It may fail due to password mismatch, empty password,
-    or another log in restriction failure. If the log in operation is successful, it returns
-    the logged in credential's realm, and the logged in credential.
-  - `SetPassword(credential stub.Credential, password string)`: Sets a new password on the object.
-    It does by hashing the password (according to the credential's hashing engine) and
-    stores it by the same mean the Credential provides to store the password hash.
-  - `ClearPassword(credential stub.Credential)`: Actually tells the credential to clear its password.
-  - `Authorize(credential stub.Credential, requirement stub.AuthorizationRequirement)`:
-    Checks whether a specific credential (this usually apples to logged ones) is authorized
-    by that requirement (which could be a single or complex one).
+Realms provide two methods of interest:
 
-For login to work, a `CredentialsMultiManager` must be created. It is just a kind of map with string keys,
-and values of type `CredentialsManager`. You'll be using it indirectly through the `Login` function, and
-middleware implementations/plugins will make use of it.
+  - `Unmarshal(pk interface{}) (stub.Credential, error)`: Retrieves a credential of the realm's type,
+    given a key (which is defined by the `Credential` as the primary one, but that's not necessarily
+    true at database level: it may be another candidate key there).
+  - `Lookup(identification interface{}) (stub.Credential, error)`: This is similar, but searches for
+    the credential's identification field (and case-sensitivity settings) instead of strictly against
+    the primary key (or non-human-friendly candidate key).
+
+But you'll rarely use these methods: the nearest thing you will do is implementing the underlying
+`Source` you'll use. The realm is used indirectly, however: you'll instantiate something I added as
+`MultiRealm` (which is, just to start, a map with string keys, and `Realm` values). Once you instantiate
+this multi-realm object, you'll have access to these 3 methods you may use directly:
+
+  - `Unmarshal(realm string, pk interface{}) (stub.Credential, error)`: Given a realm key (which must
+    exist in the map) it unmarshals a given key into the corresponding credential in the realm. This
+    calls `Unmarshal` in the corresponding `Realm` object.
+  - `Lookup(realm string, identification interface{}) (stub.Credential, error)`: This method is quite
+    similar but, instead of looking by its key, the credentials lookup is done by identification. This
+    calls `Lookup` in the corresponding `Realm` object.
+  - `MultiLookup(identification interface{}) (string, stub.Credential, error)`: This method performs
+    a lookup of the given key by testing each realm (order is not guaranteed!) until it finds a match.
+    The matched realm and credential are returned, or an error if there is no match.
+  - `Login(realm string, identification interface{}, password string) (string, stub.Credential, error)`:
+    Performs a lookup for a credential given its identification and realm (if realm is `"""`, performs
+    a multi-lookup instead), and tries to log-in given its password. If there is a matched credential,
+    its password also matches, and it _can login_ (which is defined by the `Credential` itself) then
+    the credential and the realm are returned. If no credential and/or password is matched, or it cannot
+    login (according to the said criteria) then an error is returned, and no credential/realm.
 
 Configuring hashers
 -------------------
@@ -93,8 +108,8 @@ It consists on three parts:
   - `gorm_impl.User`: It is an abstract class with some user functionalities.
     You still have to inherit (compose it) this class and define the
     `HashingEngine()` to make it return your newly created / obtained hasher.
-  - `gorm_impl.Lookup(*gorm.DB)`: A gorm lookup mechanism that allows us to
-    search for those credentials.
+  - `gorm_impl.NewSource(*gorm.DB)`: A gorm lookup mechanism that allows us to
+    search for those credentials (satisfies the `Source` interface).
 
 When you're ready, you can install them: `db.AutoMigrate(&ModelBackedScope{}, &MyUserSubclass{})`.
 If you want, you can peek the source code of those two classes and implement types by yourself.
