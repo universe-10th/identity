@@ -53,7 +53,7 @@ this multi-realm object, you'll have access to these 3 methods you may use direc
     a lookup of the given key by testing each realm (order is not guaranteed!) until it finds a match.
     The matched realm and credential are returned, or an error if there is no match.
   - `Login(realm string, identification interface{}, password string) (string, stub.Credential, error)`:
-    Performs a lookup for a credential given its identification and realm (if realm is `"""`, performs
+    Performs a lookup for a credential given its identification and realm (if realm is `""`, performs
     a multi-lookup instead), and tries to log-in given its password. If there is a matched credential,
     its password also matches, and it _can login_ (which is defined by the `Credential` itself) then
     the credential and the realm are returned. If no credential and/or password is matched, or it cannot
