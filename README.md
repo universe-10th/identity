@@ -1,5 +1,5 @@
 Requirements
-============
+------------
 
 In order to use respective hashing algorithms:
 
@@ -115,3 +115,42 @@ When you're ready, you can install them: `db.AutoMigrate(&ModelBackedScope{}, &M
 If you want, you can peek the source code of those two classes and implement types by yourself.
 
 And that's it! Migrate them, run them, and have your system around it.
+
+Web Helpers
+-----------
+
+For Iris framework, there is one adapter at `github.com/universe-10th/identity/plugins/iris`.
+
+Such adapter works by instantiating it against a current `Session` (which is either a regular
+Iris session or a JWT-based one when using module `github.com/universe-10th/iris-jwt-sessions`).
+Say this one is the adapter:
+
+    import (
+        ...
+        webRealms "github.com/universe-10th/identity/plugins/iris"
+        ...
+    )
+    
+    myMultiRealm := MultiRealm{... whatever realms you declare here ...}
+    newWebRealm := webRealms.Factory(myMultiRealm)
+
+    func MyHandler(session *sessions.Session) string, int {
+        adapter := newWebRealm(session)
+    }
+
+You can call these methods:
+
+  - `Login(realm string, identification interface{}, password string) (string, stub.Credential, error)`:
+    Tries to perform a login against that credential (using the aforementioned `Login` method in multi-realms).
+    On successful login, it stores the credential's key and realm in the involved session.
+  - `Logout()`: Just clears any realm / key values from the involved session.
+  - `Current() (string, stub.Credential)`: Gets the current credential. It takes the stored key and realm from
+    the involved session to know how to unmarshal and return the credential. If any error occurs, or any data
+    is missing, a silent logout will be performed. **Caution**: This method actually hits the database, as the
+    `Login` method does. Avoid calling this method if you already called `Login`: just keep the result value of
+    `Login` and you'll save extra unnecessary access to database(s) or storage(s).
+
+Notes
+-----
+
+**TESTS TO BE ADDED!!!**
