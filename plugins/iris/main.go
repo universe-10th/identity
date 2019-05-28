@@ -81,11 +81,18 @@ func (webRealms *WebRealms) Logout() {
 }
 
 
-// Given a multiRealm, returns a function that creates
-// a helper WebRealms for the current, say, session (or
-// JWT session).
-func Factory(multiRealm identity.MultiRealm) func(Session) *WebRealms {
-	return func(session Session) *WebRealms {
-		return &WebRealms{multiRealm, session}
-	}
+// A factory to create a WebRealm using a given multi-realm reference.
+type WebRealmsFactory struct {
+	multiRealm identity.MultiRealm
+}
+
+
+// Given a session, creates a *WebRealm instance.
+func (factory *WebRealmsFactory) For(session Session) *WebRealms {
+	return &WebRealms{factory.multiRealm, session}
+}
+
+
+func Factory(multiRealm identity.MultiRealm) *WebRealmsFactory {
+	return &WebRealmsFactory{multiRealm}
 }
