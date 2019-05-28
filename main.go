@@ -14,5 +14,5 @@ func prototypeIsAStructPtr(prototype interface{}) bool {
 		return false
 	}
 	// Also the indirect type must be a struct.
-	return prType.Elem().Kind() != reflect.Struct
+	return prType.Elem().Kind() == reflect.Struct
 }
