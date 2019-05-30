@@ -79,6 +79,25 @@ func (realm *Realm) accepts(credential stub.Credential) bool {
 var NotAccepted = errors.New("credential not accepted by requested realm")
 
 
+// Creates a new instance given an identification and a password.
+// It does NOT save it.
+func (realm *Realm) New(identification interface{}, password string) (stub.Credential, error) {
+	credential := reflect.New(realm.factoryType).Interface().(stub.Credential)
+	credential.SetIdentification(identification)
+	var err error = nil
+	if password == "" {
+		err = SetPassword(credential, password);
+	} else {
+		err = ClearPassword(credential);
+	}
+	if err != nil {
+		return nil, err
+	} else {
+		return credential, nil
+	}
+}
+
+
 // Saves a credential - returns underlying / NotAccepted error.
 func (realm *Realm) Save(credential stub.Credential) error {
 	if !realm.accepts(credential) {
@@ -183,6 +202,19 @@ func (multiRealm MultiRealm) Login(realm string, identification interface{}, pas
 
 	// Succeed: return realm key, credential, and no error
 	return realm, credential, nil
+}
+
+
+// Given a realm, tries to use it to create a new credential instance.
+// Returns the underlying error, which could be: realm not found,
+// or another inner error while trying to hash / clear its new password.
+func (multiRealm MultiRealm) New(realm string, identification interface{}, password string) (stub.Credential, error) {
+	// A single-realm check
+	if manager, ok := multiRealm[realm]; ok {
+		return manager.New(identification, password)
+	} else {
+		return nil, InvalidRealm
+	}
 }
 
 
