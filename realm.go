@@ -85,7 +85,7 @@ func (realm *Realm) New(identification interface{}, password string) (stub.Crede
 	credential := reflect.New(realm.factoryType).Interface().(stub.Credential)
 	credential.SetIdentification(identification)
 	var err error = nil
-	if password == "" {
+	if password != "" {
 		err = SetPassword(credential, password);
 	} else {
 		err = ClearPassword(credential);
