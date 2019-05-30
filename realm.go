@@ -4,6 +4,7 @@ import (
 	"github.com/universe-10th/identity/stub"
 	"reflect"
 	"github.com/universe-10th/identity/support/types"
+	"errors"
 )
 
 
@@ -61,6 +62,39 @@ func (realm *Realm) Lookup(identification interface{}) (stub.Credential, error) 
 		return nil, err
 	} else {
 		return holder, nil
+	}
+}
+
+
+// Tells whether the given credential matches the type in the prototype.
+func (realm *Realm) accepts(credential stub.Credential) bool {
+	if credential == nil {
+		return false
+	} else {
+		return reflect.TypeOf(credential).Elem() == realm.factoryType
+	}
+}
+
+
+var NotAccepted = errors.New("credential not accepted by requested realm")
+
+
+// Saves a credential - returns underlying / NotAccepted error.
+func (realm *Realm) Save(credential stub.Credential) error {
+	if !realm.accepts(credential) {
+		return NotAccepted
+	} else {
+		return realm.source.Save(credential)
+	}
+}
+
+
+// Deletes a credential - returns underlying / NotAccepted error.
+func (realm *Realm) Delete(credential stub.Credential) error {
+	if !realm.accepts(credential) {
+		return NotAccepted
+	} else {
+		return realm.source.Delete(credential)
 	}
 }
 
@@ -149,4 +183,30 @@ func (multiRealm MultiRealm) Login(realm string, identification interface{}, pas
 
 	// Succeed: return realm key, credential, and no error
 	return realm, credential, nil
+}
+
+
+// Given a realm, tries to use it to save a new/existing credential.
+// Returns the underlying error, which could be: realm not found,
+// credential not accepted by realm, or another inner error.
+func (multiRealm MultiRealm) Save(realm string, credential stub.Credential) error {
+	// A single-realm check
+	if manager, ok := multiRealm[realm]; ok {
+		return manager.Save(credential)
+	} else {
+		return InvalidRealm
+	}
+}
+
+
+// Given a realm, tries to use it to delete an existing credential.
+// Returns the underlying error, which could be: realm not found,
+// credential not accepted by realm, or another inner error.
+func (multiRealm MultiRealm) Delete(realm string, credential stub.Credential) error {
+	// A single-realm check
+	if manager, ok := multiRealm[realm]; ok {
+		return manager.Delete(credential)
+	} else {
+		return InvalidRealm
+	}
 }
