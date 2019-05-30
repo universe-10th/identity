@@ -8,4 +8,6 @@ package stub
 type Source interface {
 	ByPrimaryKey(resultHolder Credential, pk interface{}) error
 	ByIdentification(resultHolder Credential, identification interface{}) error
+	Save(credential Credential) error
+	Delete(credential Credential) error
 }

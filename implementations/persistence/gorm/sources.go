@@ -35,6 +35,18 @@ func (gormSource *gormSource) ByPrimaryKey(resultHolder stub.Credential, pk inte
 }
 
 
+// Saves a credential (either updating or creating) - returns its associated error
+func (gormSource *gormSource) Save(credential stub.Credential) error {
+	return gormSource.db.Save(credential).Error
+}
+
+
+// Deletes a credential (either hard or soft) - returns its associated error
+func (gormSource *gormSource) Delete(credential stub.Credential) error {
+	return gormSource.db.Delete(credential).Error
+}
+
+
 // Instantiates a GORM-compatible lookup source for a particular db
 // connection given as argument.
 func NewSource(db *gorm.DB) stub.Source {
