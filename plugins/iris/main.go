@@ -93,6 +93,12 @@ func (factory *WebRealmsFactory) For(session Session) *WebRealms {
 }
 
 
+// Gets the underlying MultiRealm instance.
+func (factory *WebRealmsFactory) MultiRealm() identity.MultiRealm {
+	return factory.multiRealm
+}
+
+
 func Factory(multiRealm identity.MultiRealm) *WebRealmsFactory {
 	return &WebRealmsFactory{multiRealm}
 }
