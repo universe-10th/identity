@@ -22,6 +22,12 @@ type Credential interface {
 	// Tells whether the identification lookup is case
 	// sensitive or not (only useful to string fields).
 	IdentificationIsCaseSensitive() bool
+	// Gets the identification (it must make sense with
+	// the value in IdentificationField).
+	Identification() interface{}
+	// Sets the identification (it must make sense with
+	// the value in IdentificationField).
+	SetIdentification(identification interface{})
 	// A mean to set the password. It will most likely
 	// store the (hashed) password inside a particular
 	// field in the credential.

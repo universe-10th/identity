@@ -57,6 +57,18 @@ func (*User) IdentificationIsCaseSensitive() bool {
 }
 
 
+// Sets the identification field value (username).
+func (user *User) SetIdentification(identification interface{}) {
+	user.Username = identification.(string)
+}
+
+
+// Gets the identification field value (username).
+func (user *User) Identification() interface{} {
+	return user.Username
+}
+
+
 // The hashed password will be set in the "password" field.
 func (user *User) SetHashedPassword(password string) {
 	user.Password = password
