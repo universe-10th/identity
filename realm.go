@@ -1,24 +1,21 @@
 package identity
 
 import (
-	"github.com/universe-10th/identity/stub"
-	"reflect"
-	"github.com/universe-10th/identity/support/types"
 	"errors"
+	"github.com/universe-10th/identity/support/types"
+	"reflect"
 )
-
 
 // A (credential) realm combines a lookup source and a credential
 // prototype to be used inside an internal factory to generate new
 // records as needed by marshalling or even logging in.
 type Realm struct {
-	source stub.Source
+	source      Source
 	factoryType reflect.Type
 }
 
-
 // Creates a realm, requiring both the lookup source and the prototype.
-func NewRealm(source stub.Source, prototype stub.Credential) (*Realm, error) {
+func NewRealm(source Source, prototype Credential) (*Realm, error) {
 	// Ensure only a pointer to a struct is used as prototype
 	if !prototypeIsAStructPtr(prototype) {
 		return nil, StructPointerStubExpected
@@ -32,17 +29,15 @@ func NewRealm(source stub.Source, prototype stub.Credential) (*Realm, error) {
 	return &Realm{source, reflect.TypeOf(prototype).Elem()}, nil
 }
 
-
 // Creates an instance of the given type (in heap - returns a pointer) and makes
 // an interface out of it.
-func (realm *Realm) factory() stub.Credential {
-	return reflect.New(realm.factoryType).Interface().(stub.Credential)
+func (realm *Realm) factory() Credential {
+	return reflect.New(realm.factoryType).Interface().(Credential)
 }
-
 
 // Unmarshal a credential: it performs the appropriate lookup given its key.
 // Used when de-serializing its ID in a live session.
-func (realm *Realm) Unmarshal(pk interface{}) (stub.Credential, error) {
+func (realm *Realm) Unmarshal(pk interface{}) (Credential, error) {
 	// Find the credential in database, using source and factory.
 	holder := realm.factory()
 	if err := realm.source.ByPrimaryKey(holder, pk); err != nil {
@@ -52,10 +47,9 @@ func (realm *Realm) Unmarshal(pk interface{}) (stub.Credential, error) {
 	}
 }
 
-
 // Lookup a credential: it performs the appropriate lookup given its identification.
 // Used when logging in.
-func (realm *Realm) Lookup(identification interface{}) (stub.Credential, error) {
+func (realm *Realm) Lookup(identification interface{}) (Credential, error) {
 	// Find the credential in database, using source and factory.
 	holder := realm.factory()
 	if err := realm.source.ByIdentification(holder, identification); err != nil {
@@ -65,9 +59,8 @@ func (realm *Realm) Lookup(identification interface{}) (stub.Credential, error) 
 	}
 }
 
-
 // Tells whether the given credential matches the type in the prototype.
-func (realm *Realm) accepts(credential stub.Credential) bool {
+func (realm *Realm) accepts(credential Credential) bool {
 	if credential == nil {
 		return false
 	} else {
@@ -75,20 +68,18 @@ func (realm *Realm) accepts(credential stub.Credential) bool {
 	}
 }
 
-
 var NotAccepted = errors.New("credential not accepted by requested realm")
-
 
 // Creates a new instance given an identification and a password.
 // It does NOT save it.
-func (realm *Realm) New(identification interface{}, password string) (stub.Credential, error) {
-	credential := reflect.New(realm.factoryType).Interface().(stub.Credential)
+func (realm *Realm) New(identification interface{}, password string) (Credential, error) {
+	credential := reflect.New(realm.factoryType).Interface().(Credential)
 	credential.SetIdentification(identification)
 	var err error = nil
 	if password != "" {
-		err = SetPassword(credential, password);
+		err = SetPassword(credential, password)
 	} else {
-		err = ClearPassword(credential);
+		err = ClearPassword(credential)
 	}
 	if err != nil {
 		return nil, err
@@ -97,9 +88,8 @@ func (realm *Realm) New(identification interface{}, password string) (stub.Crede
 	}
 }
 
-
 // Saves a credential - returns underlying / NotAccepted error.
-func (realm *Realm) Save(credential stub.Credential) error {
+func (realm *Realm) Save(credential Credential) error {
 	if !realm.accepts(credential) {
 		return NotAccepted
 	} else {
@@ -107,9 +97,8 @@ func (realm *Realm) Save(credential stub.Credential) error {
 	}
 }
 
-
 // Deletes a credential - returns underlying / NotAccepted error.
-func (realm *Realm) Delete(credential stub.Credential) error {
+func (realm *Realm) Delete(credential Credential) error {
 	if !realm.accepts(credential) {
 		return NotAccepted
 	} else {
@@ -117,19 +106,16 @@ func (realm *Realm) Delete(credential stub.Credential) error {
 	}
 }
 
-
 // With realms, now we can implement multi-realms.
-
 
 // A MultiRealm will work with many credentials managers together.
 // You will give a prefix to different backends' marshaled keys to avoid collisions
 // you'd have due to lookup eventual priority.
 type MultiRealm map[string]*Realm
 
-
 // Unmarshal a credential: it performs the appropriate lookup given a key and realm key.
 // Used when de-serializing its ID in a live session.
-func (multiRealm MultiRealm) Unmarshal(realm string, pk interface{}) (stub.Credential, error) {
+func (multiRealm MultiRealm) Unmarshal(realm string, pk interface{}) (Credential, error) {
 	if manager, ok := multiRealm[realm]; ok {
 		return manager.Unmarshal(pk)
 	} else {
@@ -137,10 +123,9 @@ func (multiRealm MultiRealm) Unmarshal(realm string, pk interface{}) (stub.Crede
 	}
 }
 
-
 // Lookup a credential: it performs the appropriate lookup given an identification and realm.
 // Used when logging in (in a specific realm).
-func (multiRealm MultiRealm) Lookup(realm string, identification interface{}) (stub.Credential, error) {
+func (multiRealm MultiRealm) Lookup(realm string, identification interface{}) (Credential, error) {
 	// A single-realm check
 	if manager, ok := multiRealm[realm]; ok {
 		return manager.Lookup(identification)
@@ -149,10 +134,9 @@ func (multiRealm MultiRealm) Lookup(realm string, identification interface{}) (s
 	}
 }
 
-
 // Lookup a credential in every realm. The first match will be considered a success, and also
 // its realm key will be returned.
-func (multiRealm MultiRealm) MultiLookup(identification interface{}) (string, stub.Credential, error) {
+func (multiRealm MultiRealm) MultiLookup(identification interface{}) (string, Credential, error) {
 	for realm, manager := range multiRealm {
 		if credential, err := manager.Lookup(identification); err == nil && credential != nil {
 			return realm, credential, err
@@ -161,12 +145,11 @@ func (multiRealm MultiRealm) MultiLookup(identification interface{}) (string, st
 	return "", nil, NoMultiMatch
 }
 
-
 // Given a realm code, an identification and a password, it tries to perform a login.
 // It may fail for several reasons: a database error, an unmatched lookup, a bad password, a
 // password-less credential, or another custom login error (after or before the passwords check).
-func (multiRealm MultiRealm) Login(realm string, identification interface{}, password string) (string, stub.Credential, error) {
-	var credential stub.Credential
+func (multiRealm MultiRealm) Login(realm string, identification interface{}, password string) (string, Credential, error) {
+	var credential Credential
 	var err error
 
 	// Perform the lookup
@@ -204,11 +187,10 @@ func (multiRealm MultiRealm) Login(realm string, identification interface{}, pas
 	return realm, credential, nil
 }
 
-
 // Given a realm, tries to use it to create a new credential instance.
 // Returns the underlying error, which could be: realm not found,
 // or another inner error while trying to hash / clear its new password.
-func (multiRealm MultiRealm) New(realm string, identification interface{}, password string) (stub.Credential, error) {
+func (multiRealm MultiRealm) New(realm string, identification interface{}, password string) (Credential, error) {
 	// A single-realm check
 	if manager, ok := multiRealm[realm]; ok {
 		return manager.New(identification, password)
@@ -217,11 +199,10 @@ func (multiRealm MultiRealm) New(realm string, identification interface{}, passw
 	}
 }
 
-
 // Given a realm, tries to use it to save a new/existing credential.
 // Returns the underlying error, which could be: realm not found,
 // credential not accepted by realm, or another inner error.
-func (multiRealm MultiRealm) Save(realm string, credential stub.Credential) error {
+func (multiRealm MultiRealm) Save(realm string, credential Credential) error {
 	// A single-realm check
 	if manager, ok := multiRealm[realm]; ok {
 		return manager.Save(credential)
@@ -230,11 +211,10 @@ func (multiRealm MultiRealm) Save(realm string, credential stub.Credential) erro
 	}
 }
 
-
 // Given a realm, tries to use it to delete an existing credential.
 // Returns the underlying error, which could be: realm not found,
 // credential not accepted by realm, or another inner error.
-func (multiRealm MultiRealm) Delete(realm string, credential stub.Credential) error {
+func (multiRealm MultiRealm) Delete(realm string, credential Credential) error {
 	// A single-realm check
 	if manager, ok := multiRealm[realm]; ok {
 		return manager.Delete(credential)

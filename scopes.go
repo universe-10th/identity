@@ -1,5 +1,4 @@
-package stub
-
+package identity
 
 // An authorization requirement is a criteria being
 // tested against a particular credential.
@@ -8,7 +7,6 @@ type AuthorizationRequirement interface {
 	// satisfies this requirement.
 	SatisfiedBy(Credential) bool
 }
-
 
 // A scope is a particular requirement having a unique
 // identification. This means: a scope is an atomic
@@ -24,10 +22,8 @@ type Scope interface {
 	Description() string
 }
 
-
 type AllOf []AuthorizationRequirement
 type AnyOf []AuthorizationRequirement
-
 
 func (allOf AllOf) SatisfiedBy(credential Credential) bool {
 	for _, value := range allOf {
@@ -37,7 +33,6 @@ func (allOf AllOf) SatisfiedBy(credential Credential) bool {
 	}
 	return true
 }
-
 
 func (anyOf AnyOf) SatisfiedBy(credential Credential) bool {
 	for _, value := range anyOf {

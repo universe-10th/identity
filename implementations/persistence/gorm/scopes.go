@@ -1,9 +1,8 @@
 package gorm
 
 import (
-	"github.com/universe-10th/identity/stub"
+	"github.com/universe-10th/identity"
 )
-
 
 // This is an implementation of the Scope interface
 // consisting on database-stored instances. There
@@ -19,7 +18,6 @@ type ModelBackedScope struct {
 	HelpText string `gorm:"type:text;not null"`
 }
 
-
 // Credential implementations must implement this
 // interface if they expect ModelBackedScope instances
 // return true in the satisfaction question.
@@ -27,18 +25,15 @@ type ModelBackedScopeHolder interface {
 	GetScopes(forceRefresh bool) map[string]*ModelBackedScope
 }
 
-
 // The scope's key is stored in its "key" field.
 func (scope *ModelBackedScope) Key() string {
 	return scope.Code
 }
 
-
 // The scope's name is stored in its "name" field.
 func (scope *ModelBackedScope) Name() string {
 	return scope.Label
 }
-
 
 // The scope's description is stored in its "description"
 // field.
@@ -46,11 +41,10 @@ func (scope *ModelBackedScope) Description() string {
 	return scope.HelpText
 }
 
-
 // Satisfaction check against a credential implies the
 // credential implements ModelBackedScopeHolder and also
 // contains the current scope among their scopes.
-func (scope *ModelBackedScope) SatisfiedBy(credential stub.Credential) bool {
+func (scope *ModelBackedScope) SatisfiedBy(credential identity.Credential) bool {
 	if holder, isHolder := credential.(ModelBackedScopeHolder); isHolder {
 		_, ok := holder.GetScopes(false)[scope.Key()]
 		return ok

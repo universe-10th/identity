@@ -1,16 +1,14 @@
 package gorm
 
 import (
-	"github.com/universe-10th/identity/stub"
-	"github.com/universe-10th/identity/support/types"
-	"github.com/jinzhu/gorm"
 	"errors"
+	"github.com/jinzhu/gorm"
+	"github.com/universe-10th/identity"
+	"github.com/universe-10th/identity/support/types"
 )
-
 
 // Tells whether a user is deleted (when it tries to login).
 var UserIsDeleted = errors.New("user is deleted")
-
 
 // A default implementation of users, which will also hold
 // scopes and a superuser flag. It implements Credential
@@ -32,54 +30,45 @@ type User struct {
 	scopesMap map[string]*ModelBackedScope `gorm:"-"`
 }
 
-
 // Gets its primary key from the ID field.
-func(user *User) PrimaryKey() interface{} {
+func (user *User) PrimaryKey() interface{} {
 	return user.ID
 }
-
 
 // Its serialized primary key will be its ID field.
 func (*User) PrimaryKeyField() string {
 	return "id"
 }
 
-
 // Its identification field is "username".
 func (*User) IdentificationField() string {
 	return "username"
 }
-
 
 // Its identification lookup is case insensitive.
 func (*User) IdentificationIsCaseSensitive() bool {
 	return false
 }
 
-
 // Sets the identification field value (username).
 func (user *User) SetIdentification(identification interface{}) {
 	user.Username = identification.(string)
 }
-
 
 // Gets the identification field value (username).
 func (user *User) Identification() interface{} {
 	return user.Username
 }
 
-
 // The hashed password will be set in the "password" field.
 func (user *User) SetHashedPassword(password string) {
 	user.Password = password
 }
 
-
 // Clearing the password will put an empty string in it.
 func (user *User) ClearPassword() {
 	user.SetHashedPassword("")
 }
-
 
 // The current hashed password will be retrieved from the
 // "password" field.
@@ -87,14 +76,12 @@ func (user *User) HashedPassword() string {
 	return user.Password
 }
 
-
 // This method is not implemented. You have to compose this
 // type into a new one and implement this method: ensure a
 // fixed instance is returned.
-func (user *User) HashingEngine() stub.PasswordHashingEngine {
+func (user *User) HashingEngine() identity.PasswordHashingEngine {
 	panic("not implemented")
 }
-
 
 // The only login check this type performs, is the check of
 // deletion (having a deletion date).
@@ -107,13 +94,11 @@ func (user *User) CheckLogin(stage types.LoginStage) error {
 	return nil
 }
 
-
 // Checking if it is superuser is done by a check on the
 // "superuser" field.
 func (user *User) IsSuperUser() bool {
 	return user.Superuser
 }
-
 
 // Getting the (model backed) scopes is done by caching a
 // map. Please ensure that while you load a user from the

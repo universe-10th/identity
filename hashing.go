@@ -1,5 +1,4 @@
-package stub
-
+package identity
 
 // Hashing engines are facades of regularly (already
 // implemented) algorithms like bcrypt.

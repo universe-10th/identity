@@ -1,11 +1,8 @@
 package identity
 
-import "github.com/universe-10th/identity/stub"
-
-
 // Sets a new password to the given credential. The given credential must be
 // a (*T) value (with T being a struct type).
-func SetPassword(credential stub.Credential, password string) error {
+func SetPassword(credential Credential, password string) error {
 	// Ensure only a pointer to a struct enters here
 	if !prototypeIsAStructPtr(credential) {
 		return StructPointerStubExpected
@@ -20,10 +17,9 @@ func SetPassword(credential stub.Credential, password string) error {
 	}
 }
 
-
 // Clears the password from the given credential. The given credential must be
 // a (*T) value (with T being a struct type).
-func ClearPassword(credential stub.Credential) error {
+func ClearPassword(credential Credential) error {
 	// Ensure only a pointer to a struct enters here
 	if !prototypeIsAStructPtr(credential) {
 		return StructPointerStubExpected
@@ -33,4 +29,3 @@ func ClearPassword(credential stub.Credential) error {
 	credential.ClearPassword()
 	return nil
 }
-

@@ -1,5 +1,4 @@
-package stub
-
+package identity
 
 // There will be one lookup per database engine, most likely.
 // The first argument will serve both as a placeholder for the

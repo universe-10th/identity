@@ -17,13 +17,13 @@ Usage
 
 You need to correctly define classes implementing the following interfaces:
 
-  - `stub.Credential`: They will be, essentially, the users.
-  - `stub.Scope`: They will be, essentially, the requirements or permissions.
-  - `stub.Source`: It will lookup credentials, essentially, by their identification.
+  - `Credential`: They will be, essentially, the users.
+  - `Scope`: They will be, essentially, the requirements or permissions.
+  - `Source`: It will lookup credentials, essentially, by their identification.
   
 And optional interfaces like:
 
-  - `stub.WithSuperUserFlag`: Credentials also implementing interfaces can be
+  - `WithSuperUserFlag`: Credentials also implementing interfaces can be
     considered as super-users if their method returns true.
 
 Assuming you have those interfaces correctly implemented, you can create what I called a `realm`
@@ -31,10 +31,10 @@ Assuming you have those interfaces correctly implemented, you can create what I 
 
 Realms provide two methods of interest:
 
-  - `Unmarshal(pk interface{}) (stub.Credential, error)`: Retrieves a credential of the realm's type,
+  - `Unmarshal(pk interface{}) (Credential, error)`: Retrieves a credential of the realm's type,
     given a key (which is defined by the `Credential` as the primary one, but that's not necessarily
     true at database level: it may be another candidate key there).
-  - `Lookup(identification interface{}) (stub.Credential, error)`: This is similar, but searches for
+  - `Lookup(identification interface{}) (Credential, error)`: This is similar, but searches for
     the credential's identification field (and case-sensitivity settings) instead of strictly against
     the primary key (or non-human-friendly candidate key).
 
@@ -43,16 +43,16 @@ But you'll rarely use these methods: the nearest thing you will do is implementi
 `MultiRealm` (which is, just to start, a map with string keys, and `Realm` values). Once you instantiate
 this multi-realm object, you'll have access to these 3 methods you may use directly:
 
-  - `Unmarshal(realm string, pk interface{}) (stub.Credential, error)`: Given a realm key (which must
+  - `Unmarshal(realm string, pk interface{}) (Credential, error)`: Given a realm key (which must
     exist in the map) it unmarshals a given key into the corresponding credential in the realm. This
     calls `Unmarshal` in the corresponding `Realm` object.
-  - `Lookup(realm string, identification interface{}) (stub.Credential, error)`: This method is quite
+  - `Lookup(realm string, identification interface{}) (Credential, error)`: This method is quite
     similar but, instead of looking by its key, the credentials lookup is done by identification. This
     calls `Lookup` in the corresponding `Realm` object.
-  - `MultiLookup(identification interface{}) (string, stub.Credential, error)`: This method performs
+  - `MultiLookup(identification interface{}) (string, Credential, error)`: This method performs
     a lookup of the given key by testing each realm (order is not guaranteed!) until it finds a match.
     The matched realm and credential are returned, or an error if there is no match.
-  - `Login(realm string, identification interface{}, password string) (string, stub.Credential, error)`:
+  - `Login(realm string, identification interface{}, password string) (string, Credential, error)`:
     Performs a lookup for a credential given its identification and realm (if realm is `""`, performs
     a multi-lookup instead), and tries to log-in given its password. If there is a matched credential,
     its password also matches, and it _can login_ (which is defined by the `Credential` itself) then
@@ -68,7 +68,7 @@ This package currently supports the following engines:
 
   - `bcrypt` (path: `implementations/hashing/bcrypt`).
   - `argon2` (path: `implementations/hashing/argon2`).
-  - Create your own implementing `stub.PasswordHashingEngine`.
+  - Create your own implementing `PasswordHashingEngine`.
 
 And also a mixed one. This mixed can take arbitrary hashing engines, a default one, and
 read many different passwords (provided the appropriate hasher is registered in the mixed
@@ -140,11 +140,11 @@ Say this one is the adapter:
 
 You can call these methods:
 
-  - `Login(realm string, identification interface{}, password string) (string, stub.Credential, error)`:
+  - `Login(realm string, identification interface{}, password string) (string, Credential, error)`:
     Tries to perform a login against that credential (using the aforementioned `Login` method in multi-realms).
     On successful login, it stores the credential's key and realm in the involved session.
   - `Logout()`: Just clears any realm / key values from the involved session.
-  - `Current() (string, stub.Credential)`: Gets the current credential. It takes the stored key and realm from
+  - `Current() (string, Credential)`: Gets the current credential. It takes the stored key and realm from
     the involved session to know how to unmarshal and return the credential. If any error occurs, or any data
     is missing, a silent logout will be performed. **Caution**: This method actually hits the database, as the
     `Login` method does. Avoid calling this method if you already called `Login`: just keep the result value of

@@ -1,9 +1,9 @@
 package multiple
 
 import (
-	"strings"
 	"errors"
-	"github.com/universe-10th/identity/stub"
+	"github.com/universe-10th/identity"
+	"strings"
 )
 
 /**
@@ -11,8 +11,8 @@ import (
  *   using all of them (with a default for one to write).
  */
 type MultiplePasswordHashingEngine struct {
-	defaultEngine string
-	registeredEngines map[string]stub.PasswordHashingEngine
+	defaultEngine     string
+	registeredEngines map[string]identity.PasswordHashingEngine
 }
 
 var InvalidHash = errors.New("invalid hash string")
@@ -56,8 +56,7 @@ func (multiplePasswordHashingEngine *MultiplePasswordHashingEngine) Name() strin
 	panic("multiple password hashing engines have no name")
 }
 
-
-func NewWithDefault(defaultEngine stub.PasswordHashingEngine, engines ...stub.PasswordHashingEngine) stub.PasswordHashingEngine {
+func NewWithDefault(defaultEngine identity.PasswordHashingEngine, engines ...identity.PasswordHashingEngine) identity.PasswordHashingEngine {
 	if len(engines) == 0 {
 		panic("no engines were specified")
 	}
@@ -90,7 +89,6 @@ func NewWithDefault(defaultEngine stub.PasswordHashingEngine, engines ...stub.Pa
 	}
 }
 
-
-func New(engines ...stub.PasswordHashingEngine) stub.PasswordHashingEngine {
+func New(engines ...identity.PasswordHashingEngine) identity.PasswordHashingEngine {
 	return NewWithDefault(nil, engines...)
 }

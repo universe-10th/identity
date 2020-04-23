@@ -1,7 +1,6 @@
-package stub
+package identity
 
 import "github.com/universe-10th/identity/support/types"
-
 
 // Credential interface will be implemented on particular
 // models we're interested about to be credentials (one
@@ -45,7 +44,6 @@ type Credential interface {
 	// such check will also run in a different moment.
 	CheckLogin(stage types.LoginStage) error
 }
-
 
 // Super user interface provides a way to tell whether the
 // underlying object should be understood as a superuser.
