@@ -1,4 +1,4 @@
-package login_deniable
+package deniable
 
 import (
 	"time"
