@@ -18,5 +18,5 @@ type Scope interface {
 // against scope requirements, which may be
 // simple or composed.
 type Scoped interface {
-	Scopes() map[Scope]bool
+	Scopes() map[string]Scope
 }
