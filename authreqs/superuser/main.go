@@ -15,7 +15,7 @@ type Superuser uint8
 
 // Tests whether the credential is superuser or not.
 func (Superuser) SatisfiedBy(credential identity.Credential) bool {
-	if capable, ok := credential.(superuser.SuperuserCapable); ok && capable.IsSuperuser() {
+	if capable, ok := credential.(superuser.SuperuserCapable); ok && capable.Superuser() {
 		return true
 	} else {
 		return false

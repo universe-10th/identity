@@ -4,5 +4,5 @@ package superuser
 // become superusers. Superusers can
 // do ANYTHING.
 type SuperuserCapable interface {
-	IsSuperuser() bool
+	Superuser() bool
 }

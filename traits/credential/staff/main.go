@@ -4,5 +4,5 @@ package staff
 // become staff users. Such users
 // can perform administrative actions.
 type StaffCapable interface {
-	IsStaff() bool
+	Staff() bool
 }

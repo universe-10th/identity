@@ -15,7 +15,7 @@ type Staff uint8
 
 // Tests whether the credential is staff or not.
 func (Staff) SatisfiedBy(credential identity.Credential) bool {
-	if capable, ok := credential.(staff.StaffCapable); ok && capable.IsStaff() {
+	if capable, ok := credential.(staff.StaffCapable); ok && capable.Staff() {
 		return true
 	} else {
 		return false
