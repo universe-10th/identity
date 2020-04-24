@@ -1,4 +1,4 @@
-package superuser
+package staff
 
 // This trait allows credentials to
 // become staff users. Such users
