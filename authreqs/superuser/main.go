@@ -21,3 +21,5 @@ func (Superuser) SatisfiedBy(credential identity.Credential) bool {
 		return false
 	}
 }
+
+const RequireSuperuser = Superuser(0)
