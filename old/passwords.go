@@ -1,4 +1,4 @@
-package identity
+package old
 
 // Sets a new password to the given credential. The given credential must be
 // a (*T) value (with T being a struct type).
