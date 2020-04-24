@@ -7,7 +7,7 @@ import (
 
 // This requirement checks whether a
 // credential is superuser. It is meant
-// to be used in an "AnyOf" compound auth
+// to be used in an "TryAll" compound auth
 // requirement and in the first position
 // of such array. It will be used by a
 // convenience class for the developer.
