@@ -2,7 +2,7 @@ package deniable
 
 import (
 	"time"
-	"github.com/universe-10th/identity"
+	"github.com/universe-10th/identity/credentials"
 )
 
 // This trait allows to punish a credential (this implies the
@@ -14,8 +14,8 @@ import (
 // value may be nil. Punishing an already punished credential
 // will entirely replace the ban.
 type Punishable interface {
-	PunishedFor() (punishedOn *time.Time, forTime *time.Duration, reason interface{}, by identity.Credential)
-	Punish(forTime *time.Duration, reason interface{}, by identity.Credential)
+	PunishedFor() (punishedOn *time.Time, forTime *time.Duration, reason interface{}, by credentials.Credential)
+	Punish(forTime *time.Duration, reason interface{}, by credentials.Credential)
 	Unpunish()
 }
 

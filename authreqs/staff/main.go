@@ -1,8 +1,8 @@
 package staff
 
 import (
-	"github.com/universe-10th/identity"
-	"github.com/universe-10th/identity/traits/credential/staff"
+	"github.com/universe-10th/identity/credentials"
+	"github.com/universe-10th/identity/credentials/traits/staff"
 )
 
 // This requirement checks whether a
@@ -14,7 +14,7 @@ import (
 type Staff uint8
 
 // Tests whether the credential is staff or not.
-func (Staff) SatisfiedBy(credential identity.Credential) bool {
+func (Staff) SatisfiedBy(credential credentials.Credential) bool {
 	if capable, ok := credential.(staff.StaffCapable); ok && capable.Staff() {
 		return true
 	} else {

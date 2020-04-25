@@ -1,7 +1,7 @@
 package password
 
 import (
-	"github.com/universe-10th/identity"
+	"github.com/universe-10th/identity/credentials"
 	"github.com/universe-10th/identity/pipelines/login"
 )
 
@@ -11,8 +11,8 @@ import (
 // not being able to login because it has none.
 type PasswordCheckingStep uint8
 
-
-func (PasswordCheckingStep) Login(credential identity.Credential, password string) error {
+// Attempts the login step of password check.
+func (PasswordCheckingStep) Login(credential credentials.Credential, password string) error {
 	hashed := credential.HashedPassword()
 	if hashed == "" {
 		return login.ErrLoginFailed

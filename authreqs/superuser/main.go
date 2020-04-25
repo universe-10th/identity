@@ -1,8 +1,8 @@
 package superuser
 
 import (
-	"github.com/universe-10th/identity"
-	"github.com/universe-10th/identity/traits/credential/superuser"
+	"github.com/universe-10th/identity/credentials"
+	"github.com/universe-10th/identity/credentials/traits/superuser"
 )
 
 // This requirement checks whether a
@@ -14,7 +14,7 @@ import (
 type Superuser uint8
 
 // Tests whether the credential is superuser or not.
-func (Superuser) SatisfiedBy(credential identity.Credential) bool {
+func (Superuser) SatisfiedBy(credential credentials.Credential) bool {
 	if capable, ok := credential.(superuser.SuperuserCapable); ok && capable.Superuser() {
 		return true
 	} else {

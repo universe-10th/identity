@@ -1,11 +1,11 @@
 package punish
 
 import (
-	"github.com/universe-10th/identity"
-	"github.com/universe-10th/identity/traits/credential/deniable"
-	"time"
 	"fmt"
-	"github.com/universe-10th/identity/traits/credential/identified"
+	"time"
+	"github.com/universe-10th/identity/credentials"
+	"github.com/universe-10th/identity/credentials/traits/deniable"
+	"github.com/universe-10th/identity/credentials/traits/identified"
 )
 
 // An instance of this type is returned by the
@@ -16,7 +16,7 @@ type PunishedError struct {
 	PunishedOn  time.Time
 	PunishedFor *time.Duration
 	Reason      interface{}
-	PunishedBy  identity.Credential
+	PunishedBy  credentials.Credential
 }
 
 func (error *PunishedError) Error() string {
@@ -57,10 +57,10 @@ type PunishmentCheckStep struct {
 
 // Attempts a log-in step which would fail if the credential
 // counts as punished.
-func (step *PunishmentCheckStep) Login(credential identity.Credential, password string) error {
+func (step *PunishmentCheckStep) Login(credential credentials.Credential, password string) error {
 	if punishable, ok := credential.(deniable.Punishable); ok {
 		if punishedOn, punishedFor, reason, punishedBy := punishable.PunishedFor(); punishedOn != nil {
-			return &PunishedError{step.TimeFormat, punishedOn, punishedFor, reason, punishedBy}
+			return &PunishedError{step.TimeFormat, *punishedOn, punishedFor, reason, punishedBy}
 		} else {
 			return nil
 		}

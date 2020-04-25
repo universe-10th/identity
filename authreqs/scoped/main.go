@@ -1,8 +1,8 @@
 package scoped
 
 import (
-	"github.com/universe-10th/identity"
-	scoped2 "github.com/universe-10th/identity/traits/credential/scoped"
+	"github.com/universe-10th/identity/credentials"
+	scoped2 "github.com/universe-10th/identity/credentials/traits/scoped"
 )
 
 // This requirement checks whether a
@@ -13,7 +13,7 @@ type Scoped struct {
 }
 
 // Tests whether the credential is superuser or not.
-func (scoped *Scoped) SatisfiedBy(credential identity.Credential) bool {
+func (scoped *Scoped) SatisfiedBy(credential credentials.Credential) bool {
 	if scopedCredential, ok := credential.(scoped2.Scoped); ok && scoped.tree.SatisfiedBy(scopedCredential) {
 		return true
 	} else {

@@ -1,8 +1,8 @@
 package login
 
 import (
-	"github.com/universe-10th/identity"
-	"github.com/kataras/iris/core/errors"
+	"errors"
+	"github.com/universe-10th/identity/credentials"
 )
 
 var ErrLoginFailed = errors.New("login failed")
@@ -15,5 +15,8 @@ var ErrLoginFailed = errors.New("login failed")
 // the step approves the login attempt, and an error
 // instance if it rejects the login attempt.
 type PipelineStep interface {
-	Login(credential identity.Credential, password string) error
+	Login(credential credentials.Credential, password string) error
 }
+
+
+// TODO create the actual pipeline (it will need the realm instance).

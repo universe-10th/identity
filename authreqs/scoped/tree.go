@@ -1,8 +1,8 @@
 package scoped
 
 import (
-	"github.com/universe-10th/identity/traits/credential/scoped"
 	"errors"
+	"github.com/universe-10th/identity/credentials/traits/scoped"
 )
 
 // This requirement contract type checks that
