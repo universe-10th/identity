@@ -5,13 +5,14 @@ import (
 	"github.com/universe-10th/identity/authreqs/scoped"
 	"github.com/universe-10th/identity/authreqs/superuser"
 	"github.com/universe-10th/identity/authreqs/staff"
+	"github.com/universe-10th/identity/authreqs"
 )
 
 // Returns an authorizer function which tells
 // whether the credential was authorized by
 // trying different authorization requirements
 // until one succeeds.
-func TryAll(alternatives ...identity.AuthorizationRequirement) func(identity.Credential) bool {
+func TryAll(alternatives ...authreqs.AuthorizationRequirement) func(identity.Credential) bool {
 	return func(credential identity.Credential) bool {
 		for _, alternative := range alternatives {
 			if alternative.SatisfiedBy(credential) {
