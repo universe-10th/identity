@@ -2,7 +2,7 @@ package password
 
 import (
 	"github.com/universe-10th/identity"
-	"github.com/kataras/iris/core/errors"
+	"github.com/universe-10th/identity/pipelines/login"
 )
 
 // This step checks the password for the given
@@ -12,18 +12,15 @@ import (
 type PasswordCheckingStep uint8
 
 
-var ErrInvalidPassword = errors.New("invalid password")
-var ErrNoPassword = errors.New("unset password to check against")
-
 func (PasswordCheckingStep) Login(credential identity.Credential, password string) error {
 	hashed := credential.HashedPassword()
 	if hashed == "" {
-		return ErrNoPassword
+		return login.ErrLoginFailed
 	}
 
 	hasher := credential.Engine()
 	if err := hasher.Validate(password, credential.HashedPassword()); err != nil {
-		return ErrInvalidPassword
+		return login.ErrLoginFailed
 	} else {
 		return nil
 	}

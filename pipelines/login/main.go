@@ -1,6 +1,11 @@
 package login
 
-import "github.com/universe-10th/identity"
+import (
+	"github.com/universe-10th/identity"
+	"github.com/kataras/iris/core/errors"
+)
+
+var ErrLoginFailed = errors.New("login failed")
 
 // A login pipeline step performs a check on a given
 // credential (this implies the credential exists and
@@ -9,6 +14,6 @@ import "github.com/universe-10th/identity"
 // second argument. The result value must be nil if
 // the step approves the login attempt, and an error
 // instance if it rejects the login attempt.
-type LoginPipelineStep interface {
+type PipelineStep interface {
 	Login(credential identity.Credential, password string) error
 }
