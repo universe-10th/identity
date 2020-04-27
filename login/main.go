@@ -2,6 +2,7 @@ package login
 
 import (
 	"errors"
+	"reflect"
 	"github.com/universe-10th/identity/credentials"
 	"github.com/universe-10th/identity/login/sources"
 	"github.com/universe-10th/identity/login/pipeline"
@@ -16,25 +17,45 @@ var ErrLoginFailed = errors.New("login failed")
 // provided.
 var ErrNoIdentification = errors.New("no identification provided")
 
+// A login realm is a function taking identifier and
+// password, and returning a credential or an error
+// after attempting a login.
+type LoginRealm func(interface{}, string) (credentials.Credential, error)
+
 // Makes a full login lifecycle function. The returned
 // function takes the identification as an arbitrary
 // value, the plain-text password as a string, and
 // returns either the found and logged credential, or
 // an error. To make this function, a login source
-// must be used.
-func MakeLogin(source sources.LoginSource, template credentials.Credential, steps ...pipeline.PipelineStep) func(interface{}, string) (credentials.Credential, error) {
+// must be used. A template credential is used to both
+// serve as factory and dummy.
+func MakeLoginRealm(source sources.LoginSource, template credentials.Credential, steps ...pipeline.PipelineStep) LoginRealm {
+	credType := reflect.TypeOf(template)
+	var factory func() credentials.Credential
+	if credType.Kind() == reflect.Ptr {
+		credElemType := credType.Elem()
+		factory = func() credentials.Credential {
+			return reflect.New(credElemType).Interface().(credentials.Credential)
+		}
+	} else {
+		factory = func() credentials.Credential {
+			return reflect.New(credType).Elem().Interface().(credentials.Credential)
+		}
+	}
+
 	return func(identifier interface{}, password string) (credentials.Credential, error) {
 		if identifier == nil {
 			return nil, ErrNoIdentification
 		}
 
-		if credential, err := source.ByIdentifier(identifier); err != nil {
+		if credential, err := source.ByIdentifier(identifier, template); err != nil {
 			// These steps are dumb and intended to prevent
 			// time correlation attacks to distinguish the
 			// case of invalid password and the case of
 			// credential not being found.
+			dummy := factory()
 			for _, step := range steps {
-				step.Login(template, password)
+				step.Login(dummy, password)
 			}
 			return nil, err
 		} else {
