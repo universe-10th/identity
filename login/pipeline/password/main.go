@@ -2,7 +2,7 @@ package password
 
 import (
 	"github.com/universe-10th/identity/credentials"
-	"github.com/universe-10th/identity/pipelines/login"
+	"github.com/universe-10th/identity/login"
 )
 
 // This step checks the password for the given

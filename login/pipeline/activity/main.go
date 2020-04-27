@@ -3,7 +3,7 @@ package activity
 import (
 	"github.com/universe-10th/identity/credentials"
 	"github.com/universe-10th/identity/credentials/traits/deniable"
-	"github.com/universe-10th/identity/pipelines/login"
+	"github.com/universe-10th/identity/login"
 )
 
 // This pipeline step tells when a credential could not

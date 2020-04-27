@@ -1,11 +1,8 @@
 package pipeline
 
 import (
-	"errors"
 	"github.com/universe-10th/identity/credentials"
 )
-
-var ErrLoginFailed = errors.New("login failed")
 
 // A login pipeline step performs a check on a given
 // credential (this implies the credential exists and
