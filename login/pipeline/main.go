@@ -1,4 +1,4 @@
-package login
+package pipeline
 
 import (
 	"errors"
@@ -18,5 +18,15 @@ type PipelineStep interface {
 	Login(credential credentials.Credential, password string) error
 }
 
-
-// TODO create the actual pipeline (it will need the realm instance).
+// Creates the pipeline function that runs several
+// checks after the credential is available.
+func Pipeline(steps ...PipelineStep) func(credentials.Credential, string) error {
+	return func(credential credentials.Credential, hashedPassword string) error {
+		for _, step := range steps {
+			if err := step.Login(credential, hashedPassword); err != nil {
+				return err
+			}
+		}
+		return nil
+	}
+}
