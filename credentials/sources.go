@@ -45,6 +45,7 @@ type Source struct {
 	broker   Broker
 	template Credential
 	tmplType reflect.Type
+	factory  func() Credential
 }
 
 // Creates a new source for a given broker and template, if they
@@ -56,7 +57,20 @@ func NewSource(broker Broker, template Credential) *Source {
 	} else if template == nil || !broker.Allows(template) {
 		panic(ErrBadTemplate)
 	}
-	return &Source{broker, template, reflect.TypeOf(template)}
+
+	credType := reflect.TypeOf(template)
+	var factory func() Credential
+	if credType.Kind() == reflect.Ptr {
+		credElemType := credType.Elem()
+		factory = func() Credential {
+			return reflect.New(credElemType).Interface().(Credential)
+		}
+	} else {
+		factory = func() Credential {
+			return reflect.New(credType).Elem().Interface().(Credential)
+		}
+	}
+	return &Source{broker, template, credType, factory}
 }
 
 // Bypasses its implementation to the broker but using the chosen
@@ -81,4 +95,10 @@ func (source *Source) Save(credential Credential) error {
 	} else {
 		return source.broker.Save(credential)
 	}
+}
+
+// Creates a dummy credential object, used for security
+// purposes following a fake login cycle.
+func (source *Source) Dummy() Credential {
+	return source.factory()
 }
