@@ -7,6 +7,8 @@ import (
 
 // Wraps many password hashing engines in one and allows
 // using all of them (with a default for one to write).
+// These hashers are considered beforehand under the
+// possibility of changing the default hasher some day.
 type MultipleHashingEngine struct {
 	defaultEngine     string
 	registeredEngines map[string]HashingEngine
@@ -48,11 +50,9 @@ func (multipleHashingEngine *MultipleHashingEngine) Validate(password string, ha
 	}
 }
 
-// Gets the name of the default hasher as own. This is
-// used to create the appropriate hasher:hashed string
-// to save and be able to restore later.
+// These implementations have no name.
 func (multipleHashingEngine *MultipleHashingEngine) Name() string {
-	return multipleHashingEngine.registeredEngines[multipleHashingEngine.defaultEngine].Name()
+	return ""
 }
 
 // Panicked when no hashers were specified when instantiating a multiple hashing engine.
