@@ -1,2 +1,4 @@
-- More hashing engines.
-- Look for another good storage engine for users & scopes.
+- Implement dummy hasher(s), dummy credential(s) and dummy source(s).
+- Test EVERYTHING (this one will be quite large) by creating samples/.
+- Move the default implementations of hashers and sources to other (new packages).
+- Update the README.md file.
