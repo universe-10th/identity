@@ -1,9 +1,9 @@
-package login
+package realm
 
 import (
 	"errors"
 	"github.com/universe-10th/identity/credentials"
-	"github.com/universe-10th/identity/login/pipeline"
+	"github.com/universe-10th/identity/realm/login"
 )
 
 // Generic error to return in most of the pipeline
@@ -22,7 +22,7 @@ var ErrNoIdentification = errors.New("no identification provided")
 // running all the elements in the pipe.
 type LoginRealm struct {
 	source credentials.Source
-	steps  []pipeline.PipelineStep
+	steps  []login.PipelineStep
 }
 
 // Makes a full login lifecycle function. The returned

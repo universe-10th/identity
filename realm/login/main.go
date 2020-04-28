@@ -1,4 +1,4 @@
-package pipeline
+package login
 
 import (
 	"github.com/universe-10th/identity/credentials"
