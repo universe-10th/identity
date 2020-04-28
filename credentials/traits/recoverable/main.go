@@ -13,6 +13,6 @@ import "time"
 // In that case, the token will also be set to
 // "" (removing the token).
 type Recoverable interface {
-	SetRecoveryToken(string, duration time.Duration)
+	SetRecoveryToken(token string, duration time.Duration)
 	RecoveryToken() string
 }
