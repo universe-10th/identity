@@ -2,10 +2,9 @@ package login
 
 import (
 	"errors"
-	"reflect"
 	"github.com/universe-10th/identity/credentials"
-	"github.com/universe-10th/identity/login/sources"
 	"github.com/universe-10th/identity/login/pipeline"
+	"reflect"
 )
 
 // Generic error to return in most of the pipeline
@@ -29,7 +28,7 @@ type LoginRealm func(interface{}, string) (credentials.Credential, error)
 // an error. To make this function, a login source
 // must be used. A template credential is used to both
 // serve as factory and dummy.
-func MakeLoginRealm(source sources.LoginSource, template credentials.Credential, steps ...pipeline.PipelineStep) LoginRealm {
+func MakeLoginRealm(source credentials.Source, template credentials.Credential, steps ...pipeline.PipelineStep) LoginRealm {
 	credType := reflect.TypeOf(template)
 	var factory func() credentials.Credential
 	if credType.Kind() == reflect.Ptr {
