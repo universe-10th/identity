@@ -73,7 +73,7 @@ func (realm *Realm) Login(identifier interface{}, password string) (credentials.
 // Attempts a password change, which involves invoking the appropriate hashing.
 // The credential will be saved after that.
 func (realm *Realm) SetPassword(credential credentials.Credential, password string) error {
-	if hashedPassword, err := credential.Engine().Hash(password); err != nil {
+	if hashedPassword, err := credential.Hasher().Hash(password); err != nil {
 		return err
 	} else {
 		credential.SetHashedPassword(hashedPassword)
@@ -92,7 +92,7 @@ func (realm *Realm) UnsetPassword(credential credentials.Credential) error {
 // hashing and also validating the current password. The credential will be
 // saved after that.
 func (realm *Realm) ChangePassword(credential credentials.Credential, currentPassword, newPassword string) error {
-	if err := credential.Engine().Validate(currentPassword, credential.HashedPassword()); err != nil {
+	if err := credential.Hasher().Validate(currentPassword, credential.HashedPassword()); err != nil {
 		return ErrBadCurrentPassword
 	} else {
 		return realm.SetPassword(credential, newPassword)
@@ -124,7 +124,7 @@ func (realm *Realm) ConfirmPasswordReset(credential credentials.Credential, toke
 		return ErrNotRecoverable
 	} else if token != recoverableCred.RecoveryToken() || token == "" {
 		return ErrBadToken
-	} else if hashed, err := credential.Engine().Hash(password); err != nil {
+	} else if hashed, err := credential.Hasher().Hash(password); err != nil {
 		return err
 	} else {
 		credential.SetHashedPassword(hashed)

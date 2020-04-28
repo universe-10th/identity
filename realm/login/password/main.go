@@ -18,7 +18,7 @@ func (PasswordCheckingStep) Login(credential credentials.Credential, password st
 		return realm.ErrLoginFailed
 	}
 
-	hasher := credential.Engine()
+	hasher := credential.Hasher()
 	if err := hasher.Validate(password, credential.HashedPassword()); err != nil {
 		return realm.ErrLoginFailed
 	} else {

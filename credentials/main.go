@@ -8,11 +8,11 @@ import "github.com/universe-10th/identity"
 // validate a password against the hash.
 type Credential interface {
 	// Returns the current (hashed) password.
-	HashedPassword()          string
+	HashedPassword() string
 	// Sets a new (already hashed) password.
 	SetHashedPassword(string)
 	// Class method to return the hashing
 	// engine used to hash and validate the
 	// passwords.
-	Engine()                  identity.HashingEngine
+	Hasher() identity.HashingEngine
 }
