@@ -4,7 +4,6 @@ import (
 	"errors"
 	"github.com/universe-10th/identity/credentials"
 	"github.com/universe-10th/identity/login/pipeline"
-	"reflect"
 )
 
 // Generic error to return in most of the pipeline
@@ -16,10 +15,15 @@ var ErrLoginFailed = errors.New("login failed")
 // provided.
 var ErrNoIdentification = errors.New("no identification provided")
 
-// A login realm is a function taking identifier and
-// password, and returning a credential or an error
-// after attempting a login.
-type LoginRealm func(interface{}, string) (credentials.Credential, error)
+// A login realm is a class combining a full pipeline
+// and a source. It only provides one method: Login,
+// which takes the identifier and password to attempt
+// a user lookup and then the actual login process by
+// running all the elements in the pipe.
+type LoginRealm struct {
+	source credentials.Source
+	steps  []pipeline.PipelineStep
+}
 
 // Makes a full login lifecycle function. The returned
 // function takes the identification as an arbitrary
@@ -28,42 +32,27 @@ type LoginRealm func(interface{}, string) (credentials.Credential, error)
 // an error. To make this function, a login source
 // must be used. A template credential is used to both
 // serve as factory and dummy.
-func MakeLoginRealm(source credentials.Source, template credentials.Credential, steps ...pipeline.PipelineStep) LoginRealm {
-	credType := reflect.TypeOf(template)
-	var factory func() credentials.Credential
-	if credType.Kind() == reflect.Ptr {
-		credElemType := credType.Elem()
-		factory = func() credentials.Credential {
-			return reflect.New(credElemType).Interface().(credentials.Credential)
-		}
-	} else {
-		factory = func() credentials.Credential {
-			return reflect.New(credType).Elem().Interface().(credentials.Credential)
-		}
+func (realm *LoginRealm) Login(identifier interface{}, password string) (credentials.Credential, error) {
+	if identifier == nil {
+		return nil, ErrNoIdentification
 	}
 
-	return func(identifier interface{}, password string) (credentials.Credential, error) {
-		if identifier == nil {
-			return nil, ErrNoIdentification
+	if credential, err := realm.source.ByIdentifier(identifier); err != nil {
+		// These steps are dumb and intended to prevent
+		// time correlation attacks to distinguish the
+		// case of invalid password and the case of
+		// credential not being found.
+		dummy := realm.source.Dummy()
+		for _, step := range realm.steps {
+			_ = step.Login(dummy, password)
 		}
-
-		if credential, err := source.ByIdentifier(identifier, template); err != nil {
-			// These steps are dumb and intended to prevent
-			// time correlation attacks to distinguish the
-			// case of invalid password and the case of
-			// credential not being found.
-			dummy := factory()
-			for _, step := range steps {
-				step.Login(dummy, password)
+		return nil, err
+	} else {
+		for _, step := range realm.steps {
+			if stepErr := step.Login(credential, password); stepErr != nil {
+				return nil, stepErr
 			}
-			return nil, err
-		} else {
-			for _, step := range steps {
-				if stepErr := step.Login(credential, password); stepErr != nil {
-					return nil, stepErr
-				}
-			}
-			return credential, nil
 		}
+		return credential, nil
 	}
 }
