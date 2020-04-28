@@ -1,26 +1,24 @@
 package compound
 
 import (
-	"github.com/universe-10th/identity/credentials"
-	"github.com/universe-10th/identity/authreqs/scoped"
-	"github.com/universe-10th/identity/authreqs/superuser"
-	"github.com/universe-10th/identity/authreqs/staff"
 	"github.com/universe-10th/identity/authreqs"
+	"github.com/universe-10th/identity/authreqs/scoped"
+	"github.com/universe-10th/identity/authreqs/staff"
+	"github.com/universe-10th/identity/authreqs/superuser"
+	"github.com/universe-10th/identity/credentials"
 )
 
-// Returns an authorizer function which tells
-// whether the credential was authorized by
-// trying different authorization requirements
-// until one succeeds.
-func TryAll(alternatives ...authreqs.AuthorizationRequirement) func(credentials.Credential) bool {
-	return func(credential credentials.Credential) bool {
-		for _, alternative := range alternatives {
-			if alternative.SatisfiedBy(credential) {
-				return true
-			}
+// A requirement that tests a list of requirements
+// and succeeds when one of them succeeds.
+type TryAll []authreqs.AuthorizationRequirement
+
+func (tryAll TryAll) SatisfiedBy(credential credentials.Credential) bool {
+	for _, alternative := range tryAll {
+		if alternative.SatisfiedBy(credential) {
+			return true
 		}
-		return false
 	}
+	return false
 }
 
 // Returns a superuser/scoped combined authorizer
