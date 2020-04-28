@@ -1,6 +1,8 @@
 package credentials
 
-import "github.com/universe-10th/identity"
+import (
+	"github.com/universe-10th/identity/hashing"
+)
 
 // Credentials have a password that has to be
 // matched. They also provide a hashing engine
@@ -14,5 +16,5 @@ type Credential interface {
 	// Class method to return the hashing
 	// engine used to hash and validate the
 	// passwords.
-	Hasher() identity.HashingEngine
+	Hasher() hashing.HashingEngine
 }
