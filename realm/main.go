@@ -3,7 +3,9 @@ package realm
 import (
 	"errors"
 	"github.com/universe-10th/identity/credentials"
+	"github.com/universe-10th/identity/credentials/traits/recoverable"
 	"github.com/universe-10th/identity/realm/login"
+	"time"
 )
 
 // Generic error to return in most of the pipeline
@@ -15,12 +17,23 @@ var ErrLoginFailed = errors.New("login failed")
 // provided.
 var ErrNoIdentification = errors.New("no identification provided")
 
+// Error to return when current password does not match.
+var ErrBadCurrentPassword = errors.New("invalid current password")
+
+// Error to return when attempting to use a credential
+// that is not recoverable on password reset features.
+var ErrNotRecoverable = errors.New("the credential is not a recoverable type")
+
+// Error to return when an invalid token was given to a
+// password reset attempt.
+var ErrBadToken = errors.New("invalid token on password reset confirm, or password reset was not issued")
+
 // A login realm is a class combining a full pipeline
 // and a source. It only provides one method: Login,
 // which takes the identifier and password to attempt
 // a user lookup and then the actual login process by
 // running all the elements in the pipe.
-type LoginRealm struct {
+type Realm struct {
 	source credentials.Source
 	steps  []login.PipelineStep
 }
@@ -32,7 +45,7 @@ type LoginRealm struct {
 // an error. To make this function, a login source
 // must be used. A template credential is used to both
 // serve as factory and dummy.
-func (realm *LoginRealm) Login(identifier interface{}, password string) (credentials.Credential, error) {
+func (realm *Realm) Login(identifier interface{}, password string) (credentials.Credential, error) {
 	if identifier == nil {
 		return nil, ErrNoIdentification
 	}
@@ -54,5 +67,68 @@ func (realm *LoginRealm) Login(identifier interface{}, password string) (credent
 			}
 		}
 		return credential, nil
+	}
+}
+
+// Attempts a password change, which involves invoking the appropriate hashing.
+// The credential will be saved after that.
+func (realm *Realm) SetPassword(credential credentials.Credential, password string) error {
+	if hashedPassword, err := credential.Engine().Hash(password); err != nil {
+		return err
+	} else {
+		credential.SetHashedPassword(hashedPassword)
+		return realm.source.Save(credential)
+	}
+}
+
+// Attempts a password unset, which involves deleting the hashed password.
+// The credential will be saved after that.
+func (realm *Realm) UnsetPassword(credential credentials.Credential) error {
+	credential.SetHashedPassword("")
+	return realm.source.Save(credential)
+}
+
+// Attempts a by-user password change, which involves invoking the appropriate
+// hashing and also validating the current password. The credential will be
+// saved after that.
+func (realm *Realm) ChangePassword(credential credentials.Credential, currentPassword, newPassword string) error {
+	if err := credential.Engine().Validate(currentPassword, credential.HashedPassword()); err != nil {
+		return ErrBadCurrentPassword
+	} else {
+		return realm.SetPassword(credential, newPassword)
+	}
+}
+
+// Attempts an external, non-logged and to-be-confirmed attempt to reset a password.
+// It will set the recovery token and save the credential. This call is only allowed
+// if the credential is of a recoverable type.
+func (realm *Realm) PreparePasswordReset(credential credentials.Credential, token string, duration time.Duration) error {
+	if recoverableCred, ok := credential.(recoverable.Recoverable); !ok {
+		return ErrNotRecoverable
+	} else {
+		recoverableCred.SetRecoveryToken(token, duration)
+		return realm.source.Save(credential)
+	}
+}
+
+// Clears an external, non-logged and to-be-confirmed attempt to reset a password.
+// This call is only allowed if the credential is of a recoverable type.
+func (realm *Realm) CancelPasswordReset(credential credentials.Credential) error {
+	return realm.PreparePasswordReset(credential, "", time.Duration(0))
+}
+
+// Confirms an external, non-logged and to-be-confirmed attempt to reset a password.
+// This call is only allowed if the credential is of a recoverable type.
+func (realm *Realm) ConfirmPasswordReset(credential credentials.Credential, token, password string) error {
+	if recoverableCred, ok := credential.(recoverable.Recoverable); !ok {
+		return ErrNotRecoverable
+	} else if token != recoverableCred.RecoveryToken() || token == "" {
+		return ErrBadToken
+	} else if hashed, err := credential.Engine().Hash(password); err != nil {
+		return err
+	} else {
+		credential.SetHashedPassword(hashed)
+		recoverableCred.SetRecoveryToken("", time.Duration(0))
+		return realm.source.Save(credential)
 	}
 }
