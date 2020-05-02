@@ -1,8 +1,8 @@
 package deniable
 
 import (
-	"time"
 	"github.com/universe-10th/identity/credentials"
+	"time"
 )
 
 // This trait allows to punish a credential (this implies the
@@ -24,4 +24,5 @@ type Punishable interface {
 // login operation.
 type Activable interface {
 	Active() bool
+	SetActive(bool)
 }
