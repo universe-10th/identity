@@ -1,4 +1,4 @@
-package samples
+package tests
 
 import "errors"
 

@@ -1,4 +1,4 @@
-package samples
+package tests
 
 import (
 	"github.com/universe-10th/identity/authreqs"
