@@ -12,6 +12,10 @@ import (
 type BaseUser struct {
 	active         bool
 	hashedPassword string
+	recoveryToken  string
+	// In this implementation, the time will be ignored
+	// if the recovery token is empty.
+	recoveryValid time.Time
 }
 
 func (user *BaseUser) Active() bool {
@@ -32,6 +36,19 @@ func (user *BaseUser) SetHashedPassword(password string) {
 
 func (user *BaseUser) Hasher() hashing.HashingEngine {
 	return DummyHasher(0)
+}
+
+func (user *BaseUser) SetRecoveryToken(token string, duration time.Duration) {
+	user.recoveryToken = token
+	user.recoveryValid = time.Now().Add(duration)
+}
+
+func (user *BaseUser) RecoveryToken() string {
+	if user.recoveryToken != "" && user.recoveryValid.Before(time.Now()) {
+		user.recoveryToken = ""
+	}
+
+	return user.recoveryToken
 }
 
 type User struct {
