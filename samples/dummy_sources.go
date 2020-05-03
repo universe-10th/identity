@@ -68,6 +68,7 @@ func (user *User) Unpunish() {
 }
 
 type Admin struct {
+	BaseUser
 	superuser bool
 	scopes    map[string]scoped.Scope
 }
