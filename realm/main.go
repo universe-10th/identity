@@ -28,13 +28,19 @@ var ErrNotRecoverable = errors.New("the credential is not a recoverable type")
 // password reset attempt.
 var ErrBadToken = errors.New("invalid token on password reset confirm, or password reset was not issued")
 
+// Panicked when a nil source is given to a realm.
+var ErrNilSource = errors.New("source is nil")
+
+// Panicked when a nil pipeline step is given to a realm.
+var ErrNilPipelineStep = errors.New("pipeline step is nil")
+
 // A login realm is a class combining a full pipeline
 // and a source. It only provides one method: Login,
 // which takes the identifier and password to attempt
 // a user lookup and then the actual login process by
 // running all the elements in the pipe.
 type Realm struct {
-	source credentials.Source
+	source *credentials.Source
 	steps  []login.PipelineStep
 }
 
@@ -131,4 +137,19 @@ func (realm *Realm) ConfirmPasswordReset(credential credentials.Credential, toke
 		recoverableCred.SetRecoveryToken("", time.Duration(0))
 		return realm.source.Save(credential)
 	}
+}
+
+// Creates a new realm.
+func NewRealm(source *credentials.Source, steps ...login.PipelineStep) *Realm {
+	if source == nil {
+		panic(ErrNilSource)
+	}
+
+	for _, step := range steps {
+		if step == nil {
+			panic(ErrNilPipelineStep)
+		}
+	}
+
+	return &Realm{source: source, steps: steps}
 }
