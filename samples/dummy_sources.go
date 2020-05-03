@@ -1,9 +1,11 @@
 package samples
 
 import (
+	"errors"
 	"github.com/universe-10th/identity/credentials"
 	"github.com/universe-10th/identity/credentials/traits/scoped"
 	"github.com/universe-10th/identity/hashing"
+	"reflect"
 	"time"
 )
 
@@ -82,4 +84,34 @@ func (admin *Admin) Scopes() map[string]scoped.Scope {
 	return admin.scopes
 }
 
-// TODO the in-memory source (broker) class.
+type DummyBroker struct {
+	dataByIdentifier map[reflect.Type]map[string]credentials.Credential
+	dataByIndex      map[reflect.Type]map[int]credentials.Credential
+}
+
+func (broker *DummyBroker) Allows(template credentials.Credential) bool {
+	_, ok := broker.dataByIndex[reflect.TypeOf(template)]
+	return ok
+}
+
+var ErrNotFound = errors.New("identifier not found")
+
+func (broker *DummyBroker) ByIdentifier(identifier interface{}, template credentials.Credential) (credentials.Credential, error) {
+	if result, ok := broker.dataByIdentifier[reflect.TypeOf(template)][identifier.(string)]; !ok {
+		return nil, ErrNotFound
+	} else {
+		return result, nil
+	}
+}
+
+func (broker *DummyBroker) ByIndex(index interface{}, template credentials.Credential) (credentials.Credential, error) {
+	if result, ok := broker.dataByIndex[reflect.TypeOf(template)][index.(int)]; !ok {
+		return nil, ErrNotFound
+	} else {
+		return result, nil
+	}
+}
+
+func (broker *DummyBroker) Save(credential credentials.Credential) error {
+	return nil
+}
