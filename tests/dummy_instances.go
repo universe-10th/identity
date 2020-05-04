@@ -7,6 +7,7 @@ import (
 	"github.com/universe-10th/identity/authreqs/superuser"
 	"github.com/universe-10th/identity/credentials"
 	"github.com/universe-10th/identity/credentials/traits/scoped"
+	"github.com/universe-10th/identity/hashing"
 	"github.com/universe-10th/identity/realm"
 	"github.com/universe-10th/identity/realm/login/activity"
 	"github.com/universe-10th/identity/realm/login/password"
@@ -15,7 +16,7 @@ import (
 	"time"
 )
 
-func MakeExampleInstances() ([]authreqs.AuthorizationRequirement, []*realm.Realm) {
+func MakeUserExampleInstances() ([]authreqs.AuthorizationRequirement, []*realm.Realm) {
 	hasher := (&BaseUser{}).Hasher()
 	hash := func(input string) string {
 		hashed, _ := hasher.Hash(input)
@@ -127,4 +128,11 @@ func MakeExampleInstances() ([]authreqs.AuthorizationRequirement, []*realm.Realm
 		adminRealm, userRealm,
 	}
 	return requirements, realms
+}
+
+func MakeMultiHasherExampleInstances() (hashing.HashingEngine, DummyHasher, DummyHasher) {
+	h0 := DummyHasher(0)
+	h1 := DummyHasher(1)
+	multi := hashing.NewMultipleHashingEngine(h0, h1)
+	return multi, h0, h1
 }

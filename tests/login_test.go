@@ -7,7 +7,7 @@ import (
 )
 
 func TestAdminLoginBadPassword(t *testing.T) {
-	_, realms := MakeExampleInstances()
+	_, realms := MakeUserExampleInstances()
 	adminRealm := realms[0]
 
 	// Trying to log the SU user with password admin-su$124, which is wrong.
@@ -21,7 +21,7 @@ func TestAdminLoginBadPassword(t *testing.T) {
 }
 
 func TestAdminLoginOK(t *testing.T) {
-	_, realms := MakeExampleInstances()
+	_, realms := MakeUserExampleInstances()
 	adminRealm := realms[0]
 
 	// Trying to log the SU user with the right password.
@@ -31,7 +31,7 @@ func TestAdminLoginOK(t *testing.T) {
 }
 
 func TestUserLoginBadPassword(t *testing.T) {
-	_, realms := MakeExampleInstances()
+	_, realms := MakeUserExampleInstances()
 	userRealm := realms[1]
 
 	// Trying to log the U1 user with the password: user1$124, which is wrong.
@@ -41,7 +41,7 @@ func TestUserLoginBadPassword(t *testing.T) {
 }
 
 func TestUserLoginInactive(t *testing.T) {
-	_, realms := MakeExampleInstances()
+	_, realms := MakeUserExampleInstances()
 	userRealm := realms[1]
 
 	// Trying to log the U2 user with the password: user1$123, but being inactive.
@@ -51,7 +51,7 @@ func TestUserLoginInactive(t *testing.T) {
 }
 
 func TestUserLoginPunishmentStill(t *testing.T) {
-	_, realms := MakeExampleInstances()
+	_, realms := MakeUserExampleInstances()
 	userRealm := realms[1]
 
 	// Trying to log the U4 user with the password: user4$123, but being punished.
@@ -63,7 +63,7 @@ func TestUserLoginPunishmentStill(t *testing.T) {
 }
 
 func TestUserLoginPunishmentPermanent(t *testing.T) {
-	_, realms := MakeExampleInstances()
+	_, realms := MakeUserExampleInstances()
 	userRealm := realms[1]
 
 	// Trying to log the U5 user with the password: user5$123, but being punished.
@@ -77,7 +77,7 @@ func TestUserLoginPunishmentPermanent(t *testing.T) {
 }
 
 func TestUserLoginOKUnpunished(t *testing.T) {
-	_, realms := MakeExampleInstances()
+	_, realms := MakeUserExampleInstances()
 	userRealm := realms[1]
 
 	// Trying to log the U1 user with the password: user1$123, must succeed.
@@ -87,7 +87,7 @@ func TestUserLoginOKUnpunished(t *testing.T) {
 }
 
 func TestUserLoginOKPunishmentExpired(t *testing.T) {
-	_, realms := MakeExampleInstances()
+	_, realms := MakeUserExampleInstances()
 	userRealm := realms[1]
 
 	// Trying to log the U3 user with the password: user1$123 and punishment expired, must succeed.

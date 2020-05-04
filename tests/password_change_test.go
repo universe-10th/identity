@@ -11,7 +11,7 @@ import (
 // for the first time. Then, it will fail after password changes.
 
 func TestSetPassword(t *testing.T) {
-	_, realms := MakeExampleInstances()
+	_, realms := MakeUserExampleInstances()
 	userRealm := realms[1]
 
 	credential, _ := userRealm.Login("U1", "user1$123")
@@ -27,7 +27,7 @@ func TestSetPassword(t *testing.T) {
 }
 
 func TestUnsetPassword(t *testing.T) {
-	_, realms := MakeExampleInstances()
+	_, realms := MakeUserExampleInstances()
 	userRealm := realms[1]
 
 	credential, _ := userRealm.Login("U1", "user1$123")
@@ -39,7 +39,7 @@ func TestUnsetPassword(t *testing.T) {
 }
 
 func TestPasswordResetWithBadToken(t *testing.T) {
-	_, realms := MakeExampleInstances()
+	_, realms := MakeUserExampleInstances()
 	userRealm := realms[1]
 
 	credential, _ := userRealm.Login("U1", "user1$123")
@@ -49,7 +49,7 @@ func TestPasswordResetWithBadToken(t *testing.T) {
 }
 
 func TestPasswordResetWithExpiredToken(t *testing.T) {
-	_, realms := MakeExampleInstances()
+	_, realms := MakeUserExampleInstances()
 	userRealm := realms[1]
 
 	credential, _ := userRealm.Login("U1", "user1$123")
@@ -61,7 +61,7 @@ func TestPasswordResetWithExpiredToken(t *testing.T) {
 }
 
 func TestPasswordResetSuccess(t *testing.T) {
-	_, realms := MakeExampleInstances()
+	_, realms := MakeUserExampleInstances()
 	userRealm := realms[1]
 
 	credential, _ := userRealm.Login("U1", "user1$123")
@@ -81,7 +81,7 @@ func TestPasswordResetSuccess(t *testing.T) {
 }
 
 func TestPasswordResetCancelWithNoToken(t *testing.T) {
-	_, realms := MakeExampleInstances()
+	_, realms := MakeUserExampleInstances()
 	userRealm := realms[1]
 
 	credential, _ := userRealm.Login("U1", "user1$123")
@@ -95,7 +95,7 @@ func TestPasswordResetCancelWithNoToken(t *testing.T) {
 }
 
 func TestPasswordResetCancelWithToken(t *testing.T) {
-	_, realms := MakeExampleInstances()
+	_, realms := MakeUserExampleInstances()
 	userRealm := realms[1]
 
 	credential, _ := userRealm.Login("U1", "user1$123")
