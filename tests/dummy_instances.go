@@ -51,7 +51,7 @@ func MakeExampleInstances() ([]authreqs.AuthorizationRequirement, []*realm.Realm
 	user1 := &User{BaseUser: BaseUser{active: true, hashedPassword: hash("user1$123")}}
 	user2 := &User{BaseUser: BaseUser{active: false, hashedPassword: hash("user2$123")}}
 	user3 := &User{
-		BaseUser: BaseUser{active: false, hashedPassword: hash("user3$123")},
+		BaseUser: BaseUser{active: true, hashedPassword: hash("user3$123")},
 		// Punishment: expired
 		punishedOn:  ago(time.Hour * 24 * 7),
 		punishedFor: ptr(time.Hour * 24 * 3),
@@ -59,7 +59,7 @@ func MakeExampleInstances() ([]authreqs.AuthorizationRequirement, []*realm.Realm
 		punisher:    adminS1,
 	}
 	user4 := &User{
-		BaseUser: BaseUser{active: false, hashedPassword: hash("user4$123")},
+		BaseUser: BaseUser{active: true, hashedPassword: hash("user4$123")},
 		// Punishment: current
 		punishedOn:  ago(time.Hour * 24 * 7),
 		punishedFor: ptr(time.Hour * 24 * 8),
@@ -67,7 +67,7 @@ func MakeExampleInstances() ([]authreqs.AuthorizationRequirement, []*realm.Realm
 		punisher:    adminS1,
 	}
 	user5 := &User{
-		BaseUser: BaseUser{active: false, hashedPassword: hash("user4$123")},
+		BaseUser: BaseUser{active: true, hashedPassword: hash("user4$123")},
 		// Punishment: eternal
 		punishedOn:  ago(time.Hour * 24 * 7),
 		punishedFor: nil,
