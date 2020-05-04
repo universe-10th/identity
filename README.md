@@ -1,156 +1,128 @@
 Requirements
 ------------
 
-In order to use respective hashing algorithms:
-
-  - `bcrypt`: `golang.org/x/crypto/bcrypt` (any version will do).
-  - `argon2`: `golang.org/x/crypto/argon2` (any version will do).
-
-For the credentials implementations:
-
-  - `gorm`: `github.com/jinzhu/gorm` version `v1.9.8`.
-
-You have to install them externally.
+This module has no requirements.
 
 Usage
 -----
 
+**Credentials and Sources**
+
 You need to correctly define classes implementing the following interfaces:
 
-  - `Credential`: They will be, essentially, the users.
-  - `Scope`: They will be, essentially, the requirements or permissions.
-  - `Source`: It will lookup credentials, essentially, by their identification.
-  
-And optional interfaces like:
-
-  - `WithSuperUserFlag`: Credentials also implementing interfaces can be
-    considered as super-users if their method returns true.
-
-Assuming you have those interfaces correctly implemented, you can create what I called a `realm`
-(which is barely more than a relationship between a `Credential` type and a `Source` engine).
-
-Realms provide two methods of interest:
-
-  - `Unmarshal(pk interface{}) (Credential, error)`: Retrieves a credential of the realm's type,
-    given a key (which is defined by the `Credential` as the primary one, but that's not necessarily
-    true at database level: it may be another candidate key there).
-  - `Lookup(identification interface{}) (Credential, error)`: This is similar, but searches for
-    the credential's identification field (and case-sensitivity settings) instead of strictly against
-    the primary key (or non-human-friendly candidate key).
-
-But you'll rarely use these methods: the nearest thing you will do is implementing the underlying
-`Source` you'll use. The realm is used indirectly, however: you'll instantiate something I added as
-`MultiRealm` (which is, just to start, a map with string keys, and `Realm` values). Once you instantiate
-this multi-realm object, you'll have access to these 3 methods you may use directly:
-
-  - `Unmarshal(realm string, pk interface{}) (Credential, error)`: Given a realm key (which must
-    exist in the map) it unmarshals a given key into the corresponding credential in the realm. This
-    calls `Unmarshal` in the corresponding `Realm` object.
-  - `Lookup(realm string, identification interface{}) (Credential, error)`: This method is quite
-    similar but, instead of looking by its key, the credentials lookup is done by identification. This
-    calls `Lookup` in the corresponding `Realm` object.
-  - `MultiLookup(identification interface{}) (string, Credential, error)`: This method performs
-    a lookup of the given key by testing each realm (order is not guaranteed!) until it finds a match.
-    The matched realm and credential are returned, or an error if there is no match.
-  - `Login(realm string, identification interface{}, password string) (string, Credential, error)`:
-    Performs a lookup for a credential given its identification and realm (if realm is `""`, performs
-    a multi-lookup instead), and tries to log-in given its password. If there is a matched credential,
-    its password also matches, and it _can login_ (which is defined by the `Credential` itself) then
-    the credential and the realm are returned. If no credential and/or password is matched, or it cannot
-    login (according to the said criteria) then an error is returned, and no credential/realm.
-
-Configuring hashers
--------------------
-
-Hashers (hashing engines) are the means of safely hashing, keeping and comparing passwords.
-
-This package currently supports the following engines:
-
-  - `bcrypt` (path: `implementations/hashing/bcrypt`).
-  - `argon2` (path: `implementations/hashing/argon2`).
-  - Create your own implementing `PasswordHashingEngine`.
-
-And also a mixed one. This mixed can take arbitrary hashing engines, a default one, and
-read many different passwords (provided the appropriate hasher is registered in the mixed
-one), and generate new passwords using the default one.
-
-To get a default hasher quickly, you can use:
-
-  - `bcrypt.Default`
-  - `argon2.Default`
-  
-Or perhaps customized hashers by invoking:
-
-  - `bcrypt.New(...)`
-  - `argon2.New(...)`
-
-If you understand how do those algorithms work.
-
-For the mixed case (path: `implementations/hashing/multiple`), you use:
-
-  - `multiple.New(hasher1, hasher2, ...)` - Takes the first hasher as default.
-  - `multiple.NewWithDefault(hasher2, hasher1, hasher2, ...)` - Takes `hasher2` as default.
-
-Considering that mixed hashers cannot be added to other mixed hashers, and that
-you cannot add more than one hasher of the same type.
-
-Keep the hasher of your choice preserved inside a global variable or something like that.
-You'll use it later, when creating a custom Credential.
-
-Default Implementation
-----------------------
-
-For `gorm` there is a default implementation at `implementations/persistence/gorm`.
-Let's call that package `gorm_impl`, to not collision with the `gorm`'s package name.
-
-It consists on three parts:
-  - `gorm_impl.ModelBackedScope`: It is the type of a stored scope in database.
-  - `gorm_impl.User`: It is an abstract class with some user functionalities.
-    You still have to inherit (compose it) this class and define the
-    `HashingEngine()` to make it return your newly created / obtained hasher.
-  - `gorm_impl.NewSource(*gorm.DB)`: A gorm lookup mechanism that allows us to
-    search for those credentials (satisfies the `Source` interface).
-
-When you're ready, you can install them: `db.AutoMigrate(&ModelBackedScope{}, &MyUserSubclass{})`.
-If you want, you can peek the source code of those two classes and implement types by yourself.
-
-And that's it! Migrate them, run them, and have your system around it.
-
-Web Helpers
------------
-
-For Iris framework, there is one adapter at `github.com/universe-10th/identity/plugins/iris`.
-
-Such adapter works by instantiating it against a current `Session` (which is either a regular
-Iris session or a JWT-based one when using module `github.com/universe-10th/iris-jwt-sessions`).
-Say this one is the adapter:
-
-    import (
-        ...
-        webRealms "github.com/universe-10th/identity/plugins/iris"
-        ...
-    )
+  - `credentials.Credential`: They will be, essentially, the users. There are complementary credentials that will also
+    be useful depending on the context and needs of the system, like:
+    - `credentials/traits/superuser.SuperuserCapable`: Such users _may_ become superusers in the appropriate context.
+    - `credentials/traits/staff.StaffCapable`: Such users _may_ become staff users (while not being superusers).
+    - `credentials/traits/scoped.Scoped`: Such users _may_ have scopes (self-identified permissions). Scopes are objects
+      satisfying the `credentials/traits/scoped.Scope` interface, but the inner match will only make use of the `Key` in
+      the scopes, not their references.
+    - `credentials/traits/recoverable.Recoverable`: Such users may be password-reset by their owner when their password
+      is lost.
+    - `credentials/traits/indexed.Indexed`: Such users know their index (inner key) the sources use to retrieve them.
+    - `credentials/traits/identified.Identified`: Such users know their identification the sources use to log them in.
+    - `credentials/traits/deniable.Activable`: Such users know whether they must be considered active or inactive. They
+      also have a mean to set such state.
+    - `credentials/traits/deniable.Punishable`: Such users know whether they must be considered banned/restricted. They
+      also have a mean to set such state.
+  - `credentials.Broker`: They are means to get the credentials from an underlying store. This interface will seldom
+    implemented, for there will exist common implementations (e.g. gorm, json, ...). **Notes**: when implementing your
+    own broker, remember to return `nil, nil` in `ByIdentifier` if a credential was not found by its identifier.
     
-    myMultiRealm := MultiRealm{... whatever realms you declare here ...}
-    newWebRealm := webRealms.Factory(myMultiRealm)
+Once these two interfaces (and the desired complementary ones) are implemented, a `credentials.Source` object must be
+created via `credentials.NewSource(aBrokerInstance, YourUserType{})` (you can use any primitive-derived or struct type
+as a `credentials.Credential` provided it is implemented correctly).
 
-    func MyHandler(session *sessions.Session) string, int {
-        adapter := newWebRealm(session)
-    }
+**Login pipeline**
 
-You can call these methods:
+Login process is implemented as a pipeline. After the credential is successfully retrieved it traverses a non-empty
+pipeline which satisfies the `realm/login.PipelineStep` interface, which will tell if the login must be considered as
+failed (by returning an error). Default implementations already exist for these pipeline steps like:
 
-  - `Login(realm string, identification interface{}, password string) (string, Credential, error)`:
-    Tries to perform a login against that credential (using the aforementioned `Login` method in multi-realms).
-    On successful login, it stores the credential's key and realm in the involved session.
-  - `Logout()`: Just clears any realm / key values from the involved session.
-  - `Current() (string, Credential)`: Gets the current credential. It takes the stored key and realm from
-    the involved session to know how to unmarshal and return the credential. If any error occurs, or any data
-    is missing, a silent logout will be performed. **Caution**: This method actually hits the database, as the
-    `Login` method does. Avoid calling this method if you already called `Login`: just keep the result value of
-    `Login` and you'll save extra unnecessary access to database(s) or storage(s).
+  - `realm/login/activity.ActivityStep`: Fails the login if the underlying credential implements the
+    `credentials/traits/deniable.Activable` interface and the `Active` method returns false. Returns
+    `realm.ErrLoginFailed` in that case.
+  - `realm/login/password/PasswordCheckingStep` performs the actual password check. On failure, it will also return the
+    `realm.ErrLoginFailed` error.
+  - `realm/login/punish.PunishmentCheckStep` performs an "is punished" check. On failure, it will return a custom error
+    of type `realm/login/punish.PunishmentCheckStep`. This only applies to credentials satisfying the punishable
+    interface (`credentials/traits/deniable.Punishable`), while non-implementors will always pass.
 
-Notes
------
+When the pipeline is specified (as a variadic `...realm/login.PipelineStep` argument), the `ActivityStep` and the
+`PasswordCheckingStep` must always run first (in the order you prefer, but before any other pipeline step). Most likely,
+you will always want the `PasswordCheckingStep` interface in your pipeline, but for external logins it may be a
+different case.
 
-**TESTS TO BE ADDED!!!**
+**Realms**
+
+Realms are created by calling `realm.NewRealm(a source instance, ...pipeline step instances)`. They have methods like:
+
+  - `user, err := Login(identifier, password)`: Attempts a login. Returns `realm.ErrLoginFailed` if no credential was
+    found by the given identifier, or whatever the underlying source or pipeline step(s) return as an error.
+  - `err := SetPassword(credential, password)`: Attempts a password change. The credential is then saved via the
+    underlying source. Returns whatever the source returns on save, or the credential's hasher returns on hashing.
+  - `err := UnsetPassword(credential)`: Attempts a password clear on a credential. Password-cleared credentials will
+    always fail to login. Returns whatever the source returns on save, since the credential will also be saved in this
+    case.
+  - `err := ChangePassword(credential, current, new)`: Attempts a user-commanded password change. Aside from all the
+    possible outcomes of `SetPassword`, it will also fail returning `realm.ErrBadCurrentPassword` if the current
+    password is invalid.
+  - `err := PreparePasswordReset(credential, token, duration)`: Sets a recovery token on a credential, and attempts a
+    save of it. It will fail with `realm.ErrNotRecoverable` if the credential does not implement the 
+    `credentials/traits/recoverable.Recoverable` interface, and will also return whatever the underlying source returns
+    when attempting to save the credential.
+  - `err := CancelPasswordReset(credential)`: Clears a recovery token on a credential. It returns whatever
+    `PreparePasswordReset` would return for that credential and a token.
+  - `err := ConfirmPasswordReset(credential, token, newPassword)`: Confirms a recovery process (password reset) on a
+    credential. If the credential does not implement the `Recoverable` interface, it will return the
+    `realm.ErrNotRecoverable` error. If the credential did not prepare any token, or the token is expired (considering
+    the `duration` a parameter in `PreparePasswordReset` always sets a deadline for the token starting at the issue
+    time) then `realm.ErrBadToken` will be returned. Otherwise, the same error results in the `SetPassword` may be
+    returned.
+
+**Authorization requirements**
+
+Any object satisfying the `authreqs.AuthorizationRequirement` may be used to check if a credentials satisfies it, like:
+
+    isSatisfied := myReq.SatisfiedBy(myCredential)
+
+Several implementations are provided out of the box in this module:
+
+  - `authreqs/superuser.RequireSuperuser`: Satisfies when the credential implements the
+    `credentials/traits/superuser.SuperuserCapable`, and by invoking `Superuser()` on it, it returns true.
+  - `authreqs/staff.RequireStaff`: Satisfies when the credential implements the
+    `credentials/traits/staff.StaffCapable`, and by invoking `Staff()` on it, it returns true.
+  - `authreqs/scoped.RequireScopesAmong(...specs)`: Satisfies when the credential implements the
+    `credentials/traits/scoped.Scoped` interface and the scopes on it satisfy at least one of the scope specs among the
+    arguments. The scope specs can be recursive structures involving:
+    - An instance (implementor) of `credentials/traits/scoped.Scope`, which will satisfy when the credential has a scope
+      with its same key.
+    - The result of `authreqs/scoped.Any(...specs)`, which will recursively satisfy when at least one of the specs
+      satisfies for the credential, and does not satisfy otherwise.
+    - The result of `authreqs/scoped.All(...specs)`, which will recursively not satisfy when at least one of the specs
+      does not satisfy for the credential, and satisfies otherwise.
+  - `authreqs/compound.Admin(...specs)`: Applies the following rule:
+  
+        `RequireSuperuser.SatisfiedBy(c) || RequireStaff.SatisfiedBy(c) && RequireScopesAmong(...specs).SatisfiedBy(c)` 
+
+     Intended for system administrators (superuser(s), limited-scope staff members).
+  - `authreqs/compouns.TryAll{requirement1, requirement2, ...}`: Combines all the given authorization requirements in
+    one, by satisfying when [at least] one of them satisfies for the current credential.
+
+Custom hashers
+--------------
+
+Such like credentials and brokers, custom hashers may be created by implementing the `hashing.HashingEngine` interface.
+They will have a `Name()` which should not collide with other implementations and may be per-instance.
+
+A convenience multi-hasher is provided by creating one with `hashing.NewMultipleHashingEngine(...hashers)` or with a
+_default_ engine with: `hashing.NewMultipleHashingEngineWithDefault(defaultEngine, ...engines)`. For this latter case,
+the default engine must exist among the given `...engines`. For all the cases, the engines must be never nil, they
+cannot be instances of `hashing.MultipleHashingEngine`, and at least one must be specified. For the first, the first
+engine among the arguments will be used as the _default_ one.
+
+This engine will attempt to check hashes like "foo:bar3435FSEF#" by using a registered hashing engine with name "foo"
+to check a hash "bar3435FSEF#". Hashes with no "foo:" part will be attempted to check by the default engine. Finally,
+hashing a password will always involve the default hashing engine.
+
+This hasher (hashing engine) is intended  to have several changing hashing engines being used.
