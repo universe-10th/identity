@@ -56,7 +56,7 @@ func (realm *Realm) Login(identifier interface{}, password string) (credentials.
 		return nil, ErrNoIdentification
 	}
 
-	if credential, err := realm.source.ByIdentifier(identifier); err != nil {
+	if credential, err := realm.source.ByIdentifier(identifier); credential == nil {
 		// These steps are dumb and intended to prevent
 		// time correlation attacks to distinguish the
 		// case of invalid password and the case of
@@ -64,6 +64,11 @@ func (realm *Realm) Login(identifier interface{}, password string) (credentials.
 		dummy := realm.source.Dummy()
 		for _, step := range realm.steps {
 			_ = step.Login(dummy, password)
+		}
+		// When both credential and error are nil, the
+		// ErrLoginFailed will be used instead.
+		if err == nil {
+			err = ErrLoginFailed
 		}
 		return nil, err
 	} else {

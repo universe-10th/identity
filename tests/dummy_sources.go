@@ -114,7 +114,7 @@ func (broker *DummyBroker) Allows(template credentials.Credential) bool {
 
 func (broker *DummyBroker) ByIdentifier(identifier interface{}, template credentials.Credential) (credentials.Credential, error) {
 	if result, ok := broker.dataByIdentifier[reflect.TypeOf(template)][identifier.(string)]; !ok {
-		return nil, realm.ErrLoginFailed
+		return nil, nil
 	} else {
 		return result, nil
 	}

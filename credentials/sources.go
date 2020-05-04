@@ -13,7 +13,9 @@ import (
 // whether they allow, or not, a given implementation of the
 // Credential interface. This usually involves other traits
 // being implemented in the Credential, and/or things like the
-// credential being a struct-type value.
+// credential being a struct-type value. Notes: ByIdentifier
+// must return (nil, nil) if no credential can be found by its
+// identification.
 type Broker interface {
 	Allows(template Credential) bool
 	ByIdentifier(identifier interface{}, template Credential) (Credential, error)
