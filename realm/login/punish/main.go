@@ -2,10 +2,10 @@ package punish
 
 import (
 	"fmt"
-	"time"
 	"github.com/universe-10th/identity/credentials"
 	"github.com/universe-10th/identity/credentials/traits/deniable"
 	"github.com/universe-10th/identity/credentials/traits/identified"
+	"time"
 )
 
 // An instance of this type is returned by the
@@ -60,7 +60,13 @@ type PunishmentCheckStep struct {
 func (step *PunishmentCheckStep) Login(credential credentials.Credential, password string) error {
 	if punishable, ok := credential.(deniable.Punishable); ok {
 		if punishedOn, punishedFor, reason, punishedBy := punishable.PunishedFor(); punishedOn != nil {
-			return &PunishedError{step.TimeFormat, *punishedOn, punishedFor, reason, punishedBy}
+			if punishedFor == nil {
+				return &PunishedError{step.TimeFormat, *punishedOn, punishedFor, reason, punishedBy}
+			} else if punishedOn.Add(*punishedFor).After(time.Now()) {
+				return &PunishedError{step.TimeFormat, *punishedOn, punishedFor, reason, punishedBy}
+			} else {
+				return nil
+			}
 		} else {
 			return nil
 		}

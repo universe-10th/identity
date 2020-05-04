@@ -16,7 +16,7 @@ import (
 )
 
 func MakeExampleInstances() ([]authreqs.AuthorizationRequirement, []*realm.Realm) {
-	hasher := BaseUser{}.Hasher()
+	hasher := (&BaseUser{}).Hasher()
 	hash := func(input string) string {
 		hashed, _ := hasher.Hash(input)
 		return hashed
@@ -67,7 +67,7 @@ func MakeExampleInstances() ([]authreqs.AuthorizationRequirement, []*realm.Realm
 		punisher:    adminS1,
 	}
 	user5 := &User{
-		BaseUser: BaseUser{active: true, hashedPassword: hash("user4$123")},
+		BaseUser: BaseUser{active: true, hashedPassword: hash("user5$123")},
 		// Punishment: eternal
 		punishedOn:  ago(time.Hour * 24 * 7),
 		punishedFor: nil,

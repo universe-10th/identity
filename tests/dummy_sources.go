@@ -1,10 +1,10 @@
 package tests
 
 import (
-	"errors"
 	"github.com/universe-10th/identity/credentials"
 	"github.com/universe-10th/identity/credentials/traits/scoped"
 	"github.com/universe-10th/identity/hashing"
+	"github.com/universe-10th/identity/realm"
 	"reflect"
 	"time"
 )
@@ -112,11 +112,9 @@ func (broker *DummyBroker) Allows(template credentials.Credential) bool {
 	return ok
 }
 
-var ErrNotFound = errors.New("identifier not found")
-
 func (broker *DummyBroker) ByIdentifier(identifier interface{}, template credentials.Credential) (credentials.Credential, error) {
 	if result, ok := broker.dataByIdentifier[reflect.TypeOf(template)][identifier.(string)]; !ok {
-		return nil, ErrNotFound
+		return nil, realm.ErrLoginFailed
 	} else {
 		return result, nil
 	}
@@ -124,7 +122,7 @@ func (broker *DummyBroker) ByIdentifier(identifier interface{}, template credent
 
 func (broker *DummyBroker) ByIndex(index interface{}, template credentials.Credential) (credentials.Credential, error) {
 	if result, ok := broker.dataByIndex[reflect.TypeOf(template)][index.(int)]; !ok {
-		return nil, ErrNotFound
+		return nil, realm.ErrLoginFailed
 	} else {
 		return result, nil
 	}
