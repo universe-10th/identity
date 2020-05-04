@@ -15,8 +15,8 @@ type MultipleHashingEngine struct {
 	registeredEngines map[string]HashingEngine
 }
 
-var InvalidHash = errors.New("invalid hash string")
-var UnregisteredEngine = errors.New("unregistered engine")
+var ErrInvalidHash = errors.New("invalid hash string")
+var ErrUnregisteredEngine = errors.New("unregistered engine")
 
 // Creates a hash using the default hasher engine.
 func (multipleHashingEngine *MultipleHashingEngine) Hash(password string) (string, error) {
@@ -41,11 +41,11 @@ func (multipleHashingEngine *MultipleHashingEngine) Validate(password string, ha
 		engineKey = parts[0]
 		hash = parts[1]
 	default:
-		return InvalidHash
+		return ErrInvalidHash
 	}
 	// Given the engine key, password, and hash, calculate the validation.
 	if engine, ok := multipleHashingEngine.registeredEngines[engineKey]; !ok {
-		return UnregisteredEngine
+		return ErrUnregisteredEngine
 	} else {
 		return engine.Validate(password, hash)
 	}
@@ -83,7 +83,9 @@ func NewMultipleHashingEngineWithDefault(defaultEngine HashingEngine, engines ..
 		panic(ErrNoHashers)
 	}
 
-	mphe := &MultipleHashingEngine{}
+	mphe := &MultipleHashingEngine{
+		registeredEngines: make(map[string]HashingEngine),
+	}
 
 	for _, engine := range engines {
 		if engine == nil {
