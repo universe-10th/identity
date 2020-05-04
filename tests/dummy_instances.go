@@ -111,8 +111,8 @@ func MakeUserExampleInstances() ([]authreqs.AuthorizationRequirement, []*realm.R
 	users := credentials.NewSource(broker, &User{})
 	admins := credentials.NewSource(broker, &Admin{})
 
-	adminReq1 := compound.Admin(scope2, scope5)
-	adminReq2 := compound.Admin(scope3, scope7)
+	adminReq1 := compound.Admin(scope2, scope3)
+	adminReq2 := compound.Admin(scope5, scope7)
 	tryAll := compound.TryAll{superuser.RequireSuperuser, scoped2.RequireScopesAmong(scope2, scope7)}
 
 	adminRealm := realm.NewRealm(admins, activity.ActivityStep(0), password.PasswordCheckingStep(0))
