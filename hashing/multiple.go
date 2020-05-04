@@ -77,7 +77,7 @@ var ErrNestedMultiHasher = errors.New("nesting multiple hashers is forbidden")
 // Creates a new multiple hasher using an explicitly given engine as the default one.
 // It panics of no engines, or duplicate-name engines, are given. It also panics if
 // the given default engine is not present among the engines.
-func NewWithDefault(defaultEngine HashingEngine, engines ...HashingEngine) HashingEngine {
+func NewMultipleHashingEngineWithDefault(defaultEngine HashingEngine, engines ...HashingEngine) HashingEngine {
 	if len(engines) == 0 {
 		panic(ErrNoHashers)
 	}
@@ -113,6 +113,6 @@ func NewWithDefault(defaultEngine HashingEngine, engines ...HashingEngine) Hashi
 }
 
 // Creates a new multiple hasher using the first engine as the default one.
-func New(engines ...HashingEngine) HashingEngine {
-	return NewWithDefault(nil, engines...)
+func NewMultipleHashingEngine(engines ...HashingEngine) HashingEngine {
+	return NewMultipleHashingEngineWithDefault(nil, engines...)
 }
