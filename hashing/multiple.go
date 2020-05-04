@@ -2,6 +2,7 @@ package hashing
 
 import (
 	"errors"
+	"fmt"
 	"strings"
 )
 
@@ -23,7 +24,7 @@ func (multipleHashingEngine *MultipleHashingEngine) Hash(password string) (strin
 	if hashed, err := engine.Hash(password); err != nil {
 		return "", err
 	} else {
-		return hashed, nil
+		return fmt.Sprintf("%s:%s", engine.Name(), hashed), nil
 	}
 }
 
