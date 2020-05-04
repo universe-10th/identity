@@ -1,5 +1,7 @@
 - Implement dummy hasher(s), dummy credential(s) and dummy source(s).
-  - Done: dummy hasher, dummy credentials (with several traits).
-- Test EVERYTHING (this one will be quite large) by creating samples/.
-- Move the default implementations of hashers and sources to other (new packages).
+  - Done: all here.
+- Test EVERYTHING (this one will be quite large) by creating tests/.
+  - Done: login and password change tests.
+  - Pending: Test auth requirements and multi hasher.
+- Move the default implementations of hashers and sources to other side (new packages).
 - Update the README.md file.
