@@ -13,10 +13,6 @@ import (
 // by its identification.
 var ErrLoginFailed = errors.New("login failed")
 
-// Error to return whether a nil identification was
-// provided.
-var ErrNoIdentification = errors.New("no identification provided")
-
 // Error to return when current password does not match.
 var ErrBadCurrentPassword = errors.New("invalid current password")
 
@@ -44,6 +40,16 @@ type Realm struct {
 	steps  []login.PipelineStep
 }
 
+// Retrieves a credential by its identifier. This call is directly bypassed to the source.
+func (realm *Realm) ByIdentifier(identifier interface{}) (credentials.Credential, error) {
+	return realm.source.ByIdentifier(identifier)
+}
+
+// Retrieves a credential by its index / key. This call is directly bypassed to the source.
+func (realm *Realm) ByIndex(index interface{}) (credentials.Credential, error) {
+	return realm.source.ByIndex(index)
+}
+
 // Makes a full login lifecycle function. The returned
 // function takes the identification as an arbitrary
 // value, the plain-text password as a string, and
@@ -52,11 +58,7 @@ type Realm struct {
 // must be used. A template credential is used to both
 // serve as factory and dummy.
 func (realm *Realm) Login(identifier interface{}, password string) (credentials.Credential, error) {
-	if identifier == nil {
-		return nil, ErrNoIdentification
-	}
-
-	if credential, err := realm.source.ByIdentifier(identifier); credential == nil {
+	if credential, err := realm.ByIdentifier(identifier); credential == nil {
 		// These steps are dumb and intended to prevent
 		// time correlation attacks to distinguish the
 		// case of invalid password and the case of

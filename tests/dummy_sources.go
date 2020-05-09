@@ -4,7 +4,6 @@ import (
 	"github.com/universe-10th/identity/credentials"
 	"github.com/universe-10th/identity/credentials/traits/scoped"
 	"github.com/universe-10th/identity/hashing"
-	"github.com/universe-10th/identity/realm"
 	"reflect"
 	"time"
 )
@@ -122,7 +121,7 @@ func (broker *DummyBroker) ByIdentifier(identifier interface{}, template credent
 
 func (broker *DummyBroker) ByIndex(index interface{}, template credentials.Credential) (credentials.Credential, error) {
 	if result, ok := broker.dataByIndex[reflect.TypeOf(template)][index.(int)]; !ok {
-		return nil, realm.ErrLoginFailed
+		return nil, nil
 	} else {
 		return result, nil
 	}
