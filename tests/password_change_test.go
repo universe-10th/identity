@@ -1,7 +1,7 @@
 package tests
 
 import (
-	"github.com/universe-10th/identity/realm"
+	"github.com/universe-10th/identity/realms"
 	"testing"
 	"time"
 )
@@ -11,13 +11,13 @@ import (
 // for the first time. Then, it will fail after password changes.
 
 func TestSetPassword(t *testing.T) {
-	_, realms := MakeUserExampleInstances()
-	userRealm := realms[1]
+	_, sampleRealms := MakeUserExampleInstances()
+	userRealm := sampleRealms[1]
 
 	credential, _ := userRealm.Login("U1", "user1$123")
 	_ = userRealm.SetPassword(credential, "user1$456")
 
-	if _, err := userRealm.Login("U1", "user1$123"); err != realm.ErrLoginFailed {
+	if _, err := userRealm.Login("U1", "user1$123"); err != realms.ErrLoginFailed {
 		t.Errorf("After password change, the old password attempt must return realm.ErrLoginFailed. Error returned instead: %s\n", err)
 	}
 
@@ -27,42 +27,42 @@ func TestSetPassword(t *testing.T) {
 }
 
 func TestUnsetPassword(t *testing.T) {
-	_, realms := MakeUserExampleInstances()
-	userRealm := realms[1]
+	_, sampleRealms := MakeUserExampleInstances()
+	userRealm := sampleRealms[1]
 
 	credential, _ := userRealm.Login("U1", "user1$123")
 	_ = userRealm.UnsetPassword(credential)
 
-	if _, err := userRealm.Login("U1", "user1$123"); err != realm.ErrLoginFailed {
+	if _, err := userRealm.Login("U1", "user1$123"); err != realms.ErrLoginFailed {
 		t.Errorf("After password change, the old password attempt must return realm.ErrLoginFailed. Error returned instead: %s\n", err)
 	}
 }
 
 func TestPasswordResetWithBadToken(t *testing.T) {
-	_, realms := MakeUserExampleInstances()
-	userRealm := realms[1]
+	_, sampleRealms := MakeUserExampleInstances()
+	userRealm := sampleRealms[1]
 
 	credential, _ := userRealm.Login("U1", "user1$123")
-	if err := userRealm.ConfirmPasswordReset(credential, "ab214109sdfb", "new-password"); err != realm.ErrBadToken {
+	if err := userRealm.ConfirmPasswordReset(credential, "ab214109sdfb", "new-password"); err != realms.ErrBadToken {
 		t.Errorf("Trying to reset the password using a bad token (different token, or attempting a token when none is present) must return realm.ErrBadToken. Error returned instead: %s\n", err)
 	}
 }
 
 func TestPasswordResetWithExpiredToken(t *testing.T) {
-	_, realms := MakeUserExampleInstances()
-	userRealm := realms[1]
+	_, sampleRealms := MakeUserExampleInstances()
+	userRealm := sampleRealms[1]
 
 	credential, _ := userRealm.Login("U1", "user1$123")
 	_ = userRealm.PreparePasswordReset(credential, "abc123", time.Second)
 	time.Sleep(2 * time.Second)
-	if err := userRealm.ConfirmPasswordReset(credential, "abc123", "new-password"); err != realm.ErrBadToken {
+	if err := userRealm.ConfirmPasswordReset(credential, "abc123", "new-password"); err != realms.ErrBadToken {
 		t.Errorf("Trying to reset the password using an expired token must return realm.ErrBadToken. Error returned instead: %s\n", err)
 	}
 }
 
 func TestPasswordResetSuccess(t *testing.T) {
-	_, realms := MakeUserExampleInstances()
-	userRealm := realms[1]
+	_, sampleRealms := MakeUserExampleInstances()
+	userRealm := sampleRealms[1]
 
 	credential, _ := userRealm.Login("U1", "user1$123")
 	_ = userRealm.PreparePasswordReset(credential, "abc123", time.Hour)
@@ -70,7 +70,7 @@ func TestPasswordResetSuccess(t *testing.T) {
 		t.Errorf("Trying to reset the password using a good token must return no error. Error returned instead: %s\n", err)
 	}
 
-	if _, err := userRealm.Login("U1", "user1$123"); err != realm.ErrLoginFailed {
+	if _, err := userRealm.Login("U1", "user1$123"); err != realms.ErrLoginFailed {
 		t.Errorf("After password reset, the old password attempt must return realm.ErrLoginFailed. Error returned instead: %s\n", err)
 	}
 
@@ -81,8 +81,8 @@ func TestPasswordResetSuccess(t *testing.T) {
 }
 
 func TestPasswordResetCancelWithNoToken(t *testing.T) {
-	_, realms := MakeUserExampleInstances()
-	userRealm := realms[1]
+	_, sampleRealms := MakeUserExampleInstances()
+	userRealm := sampleRealms[1]
 
 	credential, _ := userRealm.Login("U1", "user1$123")
 	if err := userRealm.CancelPasswordReset(credential); err != nil {
@@ -95,8 +95,8 @@ func TestPasswordResetCancelWithNoToken(t *testing.T) {
 }
 
 func TestPasswordResetCancelWithToken(t *testing.T) {
-	_, realms := MakeUserExampleInstances()
-	userRealm := realms[1]
+	_, sampleRealms := MakeUserExampleInstances()
+	userRealm := sampleRealms[1]
 
 	credential, _ := userRealm.Login("U1", "user1$123")
 

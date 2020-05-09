@@ -2,7 +2,7 @@ package password
 
 import (
 	"github.com/universe-10th/identity/credentials"
-	"github.com/universe-10th/identity/realm"
+	"github.com/universe-10th/identity/realms"
 )
 
 // This step checks the password for the given
@@ -15,12 +15,12 @@ type PasswordCheckingStep uint8
 func (PasswordCheckingStep) Login(credential credentials.Credential, password string) error {
 	hashed := credential.HashedPassword()
 	if hashed == "" {
-		return realm.ErrLoginFailed
+		return realms.ErrLoginFailed
 	}
 
 	hasher := credential.Hasher()
 	if err := hasher.Validate(password, credential.HashedPassword()); err != nil {
-		return realm.ErrLoginFailed
+		return realms.ErrLoginFailed
 	} else {
 		return nil
 	}

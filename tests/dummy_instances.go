@@ -8,15 +8,15 @@ import (
 	"github.com/universe-10th/identity/credentials"
 	"github.com/universe-10th/identity/credentials/traits/scoped"
 	"github.com/universe-10th/identity/hashing"
-	"github.com/universe-10th/identity/realm"
-	"github.com/universe-10th/identity/realm/login/activity"
-	"github.com/universe-10th/identity/realm/login/password"
-	"github.com/universe-10th/identity/realm/login/punish"
+	"github.com/universe-10th/identity/realms"
+	"github.com/universe-10th/identity/realms/login/activity"
+	"github.com/universe-10th/identity/realms/login/password"
+	"github.com/universe-10th/identity/realms/login/punish"
 	"reflect"
 	"time"
 )
 
-func MakeUserExampleInstances() ([]authreqs.AuthorizationRequirement, []*realm.Realm) {
+func MakeUserExampleInstances() ([]authreqs.AuthorizationRequirement, []*realms.Realm) {
 	hasher := (&BaseUser{}).Hasher()
 	hash := func(input string) string {
 		hashed, _ := hasher.Hash(input)
@@ -115,15 +115,15 @@ func MakeUserExampleInstances() ([]authreqs.AuthorizationRequirement, []*realm.R
 	adminReq2 := compound.Admin(scope5, scope7)
 	tryAll := compound.TryAll{superuser.RequireSuperuser, scoped2.RequireScopesAmong(scope2, scope7)}
 
-	adminRealm := realm.NewRealm(admins, activity.ActivityStep(0), password.PasswordCheckingStep(0))
-	userRealm := realm.NewRealm(users, activity.ActivityStep(0), password.PasswordCheckingStep(0), &punish.PunishmentCheckStep{TimeFormat: "2006-01-02T15:04:05"})
+	adminRealm := realms.NewRealm(admins, activity.ActivityStep(0), password.PasswordCheckingStep(0))
+	userRealm := realms.NewRealm(users, activity.ActivityStep(0), password.PasswordCheckingStep(0), &punish.PunishmentCheckStep{TimeFormat: "2006-01-02T15:04:05"})
 
 	// We have the realms, the users, and the admin requirements.
 	requirements := []authreqs.AuthorizationRequirement{
 		// Remember to use these in order.
 		adminReq1, adminReq2, tryAll,
 	}
-	realms := []*realm.Realm{
+	realms := []*realms.Realm{
 		// Remember to use these in order.
 		adminRealm, userRealm,
 	}

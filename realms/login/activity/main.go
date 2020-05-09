@@ -3,7 +3,7 @@ package activity
 import (
 	"github.com/universe-10th/identity/credentials"
 	"github.com/universe-10th/identity/credentials/traits/deniable"
-	"github.com/universe-10th/identity/realm"
+	"github.com/universe-10th/identity/realms"
 )
 
 // This pipeline step tells when a credential could not
@@ -14,7 +14,7 @@ type ActivityStep uint8
 // counts as inactive.
 func (ActivityStep) Login(credential credentials.Credential, password string) error {
 	if activable, ok := credential.(deniable.Activable); ok && !activable.Active() {
-		return realm.ErrLoginFailed
+		return realms.ErrLoginFailed
 	} else {
 		return nil
 	}

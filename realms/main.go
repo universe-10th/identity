@@ -1,10 +1,10 @@
-package realm
+package realms
 
 import (
 	"errors"
 	"github.com/universe-10th/identity/credentials"
 	"github.com/universe-10th/identity/credentials/traits/recoverable"
-	"github.com/universe-10th/identity/realm/login"
+	"github.com/universe-10th/identity/realms/login"
 	"time"
 )
 

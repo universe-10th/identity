@@ -1,21 +1,21 @@
 package tests
 
 import (
-	"github.com/universe-10th/identity/realm"
-	"github.com/universe-10th/identity/realm/login/punish"
+	"github.com/universe-10th/identity/realms"
+	"github.com/universe-10th/identity/realms/login/punish"
 	"testing"
 )
 
 func TestAdminLoginBadPassword(t *testing.T) {
-	_, realms := MakeUserExampleInstances()
-	adminRealm := realms[0]
+	_, sampleRealms := MakeUserExampleInstances()
+	adminRealm := sampleRealms[0]
 
 	// Trying to log the SU user with password admin-su$124, which is wrong.
-	if _, err := adminRealm.Login("SU", "admin-su$124"); err != realm.ErrLoginFailed {
+	if _, err := adminRealm.Login("SU", "admin-su$124"); err != realms.ErrLoginFailed {
 		t.Errorf("Login for user SU must fail with an invalid password. Current error:%s\n", err)
 	}
 	// Trying to log the SU2 user, which does not exist.
-	if _, err := adminRealm.Login("SU2", "admin-su$123"); err != realm.ErrLoginFailed {
+	if _, err := adminRealm.Login("SU2", "admin-su$123"); err != realms.ErrLoginFailed {
 		t.Errorf("Login for user SU2 must fail with an invalid user. Current error:%s\n", err)
 	}
 }
@@ -31,21 +31,21 @@ func TestAdminLoginOK(t *testing.T) {
 }
 
 func TestUserLoginBadPassword(t *testing.T) {
-	_, realms := MakeUserExampleInstances()
-	userRealm := realms[1]
+	_, sampleRealms := MakeUserExampleInstances()
+	userRealm := sampleRealms[1]
 
 	// Trying to log the U1 user with the password: user1$124, which is wrong.
-	if _, err := userRealm.Login("U1", "user1$124"); err != realm.ErrLoginFailed {
+	if _, err := userRealm.Login("U1", "user1$124"); err != realms.ErrLoginFailed {
 		t.Errorf("Login for user U1 must fail with an invalid password. Current error:%s\n", err)
 	}
 }
 
 func TestUserLoginInactive(t *testing.T) {
-	_, realms := MakeUserExampleInstances()
-	userRealm := realms[1]
+	_, sampleRealms := MakeUserExampleInstances()
+	userRealm := sampleRealms[1]
 
 	// Trying to log the U2 user with the password: user1$123, but being inactive.
-	if _, err := userRealm.Login("U2", "user2$123"); err != realm.ErrLoginFailed {
+	if _, err := userRealm.Login("U2", "user2$123"); err != realms.ErrLoginFailed {
 		t.Errorf("Login for user U2 must fail since it is inactive. Current error:%s\n", err)
 	}
 }
